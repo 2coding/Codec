@@ -14,7 +14,10 @@
 #include <assert.h>
 #include <math.h>
 
-//typedef int8_t bool;
+typedef long int BOOL;
+#define TRUE 1
+#define FALSE 0
+
 typedef uint8_t byte;
 
 #define cdcassert assert
