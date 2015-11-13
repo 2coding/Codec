@@ -17,7 +17,7 @@ typedef enum {
     base64opt_padding = 1 << 1,
     base64opt_unsafechar = 1 << 2,
     
-    base64opt_default = base64opt_chunk | base64opt_padding | base64opt_unsafechar
+    base64opt_standard = base64opt_chunk | base64opt_padding | base64opt_unsafechar
 }cdc_base64opt;
 
 typedef struct cdc_base64 cdc_base64;
@@ -25,7 +25,10 @@ typedef struct cdc_base64 cdc_base64;
 cdc_base64 * base64_init(cdc_base64opt opt);
 void base64_cleanup(cdc_base64 *p);
 
-uint64_t base64_encode_length(cdc_base64 *ins, uint64_t datalen);
-void base64_encode(cdc_base64 *ins, const byte *data, uint64_t datalen, char *buf, uint64_t *buflen);
+size_t base64_encode_length(cdc_base64 *ins, size_t datalen);
+void base64_encode(cdc_base64 *ins, const byte *data, size_t datalen, char *buf, size_t *buflen);
+
+size_t base64_decode_length(size_t datalen);
+BOOL base64_decode(const char *data, size_t datalen, byte *buf, size_t *buflen);
 
 #endif /* base64_h */
