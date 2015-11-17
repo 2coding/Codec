@@ -119,6 +119,11 @@ static size_t _fill_left_buf(cdc_base64 *ins,
     if (i >= datalen) {
         buf[idx++] = table[(t >> 10) & 0x3f];
         buf[idx++] = table[(t >> 4) & 0x3f];
+        
+        if (ins->opt & base64opt_padding) {
+            buf[idx++] = '=';
+            buf[idx++] = '=';
+        }
     }
     else {
         t = (t << 8) & 0xff0000;
@@ -126,10 +131,8 @@ static size_t _fill_left_buf(cdc_base64 *ins,
         buf[idx++] = table[(t >> 18) & 0x3f];
         buf[idx++] = table[(t >> 12) & 0x3f];
         buf[idx++] = table[(t >> 6) & 0x3f];
-    }
-    
-    if (ins->opt & base64opt_padding) {
-        while (idx % 4 != 0) {
+        
+        if (ins->opt & base64opt_padding) {
             buf[idx++] = '=';
         }
     }

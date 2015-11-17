@@ -32,6 +32,7 @@
 		C302BEE31BFABB1F006EFCA7 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base64.h; sourceTree = "<group>"; };
 		C302BEE41BFABB1F006EFCA7 /* cdcdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cdcdefs.h; sourceTree = "<group>"; };
 		C302BEE51BFABB1F006EFCA7 /* codec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = codec.h; sourceTree = "<group>"; };
+		C302BEEC1BFAC6BA006EFCA7 /* base64_tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = base64_tests.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +50,7 @@
 		C302BECC1BFABACF006EFCA7 = {
 			isa = PBXGroup;
 			children = (
+				C302BEEA1BFAC0EC006EFCA7 /* tests */,
 				C302BEE11BFABB1F006EFCA7 /* src */,
 				C302BEDF1BFABB01006EFCA7 /* gtest.framework */,
 				C302BED71BFABACF006EFCA7 /* Tests */,
@@ -82,6 +84,15 @@
 			);
 			name = src;
 			path = ../../../src;
+			sourceTree = "<group>";
+		};
+		C302BEEA1BFAC0EC006EFCA7 /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				C302BEEC1BFAC6BA006EFCA7 /* base64_tests.hpp */,
+			);
+			name = tests;
+			path = ../../../tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
