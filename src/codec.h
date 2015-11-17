@@ -1,10 +1,11 @@
-//
-//  codec.h
-//  CodecSample
-//
-//  Created by hesy on 15/11/16.
-//  Copyright © 2015年 2Coding. All rights reserved.
-//
+/**
+ Copyright (c) 2015-present, 2coding, Inc.
+ All rights reserved.
+ 
+ This source code is licensed under the BSD-style license found in the
+ LICENSE file in the root directory of this source tree. An additional grant
+ of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 #ifndef codec_h
 #define codec_h
