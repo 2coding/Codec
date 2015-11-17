@@ -22,6 +22,4 @@ typedef uint8_t byte;
 
 #define cdcassert assert
 
-#define cdc_api extern "C"
-
 #endif /* cdcdefs_h */
