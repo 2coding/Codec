@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:../../thirdparty/gtest-1.6.0/xcode/gtest.xcodeproj">
+      location = "group:Tests/Tests.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:CodecSample/CodecSample.xcodeproj">
+      location = "group:../../thirdparty/gtest-1.6.0/xcode/gtest.xcodeproj">
    </FileRef>
 </Workspace>
