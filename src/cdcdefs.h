@@ -33,6 +33,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
+#include <string.h>
+#include <stdarg.h>
 
 typedef long int BOOL;
 #define TRUE 1
@@ -41,5 +43,39 @@ typedef long int BOOL;
 typedef uint8_t byte;
 
 #define cdcassert assert
+
+typedef enum {
+    CODECBase64
+}CODECProtocol;
+
+typedef enum {
+    CODECEncoding,
+    CODECDecoding,
+}CODECMethod;
+
+typedef enum {
+    CODECOk,
+    
+    CODECEmptyInput,
+    CODECInvalidInput,
+    
+    CODECNullPtr
+}CODECode;
+
+typedef enum {
+    CODECBaseNChunkled,
+    CODECBaseNPadding,
+    
+    CODECBase64SafeChar,
+    CODECBase64UrlSafe
+    
+}CODECOption;
+
+typedef struct {
+    byte *data;
+    size_t length;
+}CODECData;
+
+#define CODECDATA_CLEANUP(pd) {if(pd) {free(pd->data); free(pd);}}
 
 #endif /* cdcdefs_h */

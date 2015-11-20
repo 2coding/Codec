@@ -26,27 +26,46 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef codec_h
-#define codec_h
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-    
+#ifndef codecbase_h
+#define codecbase_h
 #include "cdcdefs.h"
-    
-    typedef void *CODEC;
 
-    CODEC codec_init(CODECProtocol protocol, CODECMethod method);
-    void codec_cleanup(CODEC codec);
-    
-    CODECode codec_setup(CODEC codec, CODECOption opt, ...);
-    const CODECData * codec_work(CODEC codec, const CODECData *data);
-    
-    void codec_reset(CODEC codec);
-    CODECode codec_lasterror(CODEC codec);
+typedef struct CODECBase CODECBase;
 
-#ifdef __cplusplus
+typedef void *(*initfunc) (CODECBase *);
+typedef void (*cleanupfunc) (CODECBase *);
+typedef CODECode (*setupfunc) (CODECBase *, CODECOption, va_list);
+typedef CODECode (*workfunc) (CODECBase *, const CODECData *data);
+typedef void (*resetfunc) (CODECBase *);
+
+#define CODECBASE_MEMEBER \
+    CODECMethod method;\
+    CODECData *result;\
+    CODECode code;\
+    initfunc init;\
+    cleanupfunc cleanup;\
+    setupfunc setup;\
+    workfunc work;\
+    resetfunc reset;
+
+#define CODEC_STRUCT_DECLARE(name) \
+struct name {\
+    CODECBASE_MEMEBER
+
+#define CODEC_STRUCT_DECLARE_END }
+
+CODEC_STRUCT_DECLARE(CODECBase)
+CODEC_STRUCT_DECLARE_END;
+
+CODECBase * init(CODECMethod method, size_t size, initfunc fn);
+void cleanup(CODECBase *p);
+
+CODECData *data_init(size_t len);
+#define CODECDATA_REINIT(p, len) {\
+    if (p){\
+        CODECDATA_CLEANUP(p->result); \
+        p->result = data_init(len);\
+    }\
 }
-#endif
-#endif /* codec_h */
+
+#endif /* codecbase_h */

@@ -30,18 +30,100 @@
 
 static const int _chunklen = 76;
 
-struct cdc_base64 {
-    cdc_base64opt opt;
-};
+static size_t _base64_encode_length(struct base64 *p, size_t datalen);
+static void _base64_encode(struct base64 *p,
+                           const byte *data, size_t datalen,
+                           byte *buf, size_t *buflen);
+static size_t _base64_decode_length(size_t datalen);
+static BOOL _base64_decode(struct base64* p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
 
-cdc_base64 * base64_init(cdc_base64opt opt) {
-    cdc_base64 *ins = malloc(sizeof(cdc_base64));
-    ins->opt = opt;
-    return ins;
+static CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args);
+static CODECode _base64_work(CODECBase *p, const CODECData *data);
+
+#pragma mark - init
+void *base64_init(CODECBase *p) {
+    struct base64 *ptr = (struct base64 *)p;
+    ptr->opt = base64opt_standard;
+    ptr->setup = _base64_setopt;
+    ptr->work = _base64_work;
+    return ptr;
 }
 
-void base64_cleanup(cdc_base64 *p) {
-    free(p);
+CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
+    long larg = 0;
+    struct base64 *ptr = (struct base64 *)p;
+    switch (opt) {
+        case CODECBaseNChunkled:
+            larg = va_arg(args, long);
+            if (larg) {
+                ptr->opt |= base64opt_chunk;
+            }
+            else {
+                ptr->opt &= !base64opt_chunk;
+            }
+            break;
+            
+        case CODECBaseNPadding:
+            larg = va_arg(args, long);
+            if (larg) {
+                ptr->opt |= base64opt_padding;
+            }
+            else {
+                ptr->opt &= !base64opt_padding;
+            }
+            break;
+            
+        case CODECBase64SafeChar:
+            larg = va_arg(args, long);
+            if (larg) {
+                ptr->opt &= !base64opt_unsafechar;
+            }
+            else {
+                ptr->opt |= base64opt_unsafechar;
+            }
+            break;
+            
+        case CODECBase64UrlSafe:
+            larg = va_arg(args, long);
+            if (larg) {
+                ptr->opt = base64opt_urlsafe;
+            }
+            else {
+                ptr->opt = base64opt_standard;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return CODECOk;
+}
+
+CODECode _base64_work(CODECBase *p, const CODECData *data) {
+    struct base64 *ptr = (struct base64 *)p;
+    if (ptr->method == CODECEncoding) {
+        size_t buflen = _base64_encode_length(ptr, data->length);
+        if (!buflen) {
+            return CODECEmptyInput;
+        }
+        
+        CODECDATA_REINIT(ptr, buflen);
+        _base64_encode(ptr, data->data, data->length, ptr->result->data, &ptr->result->length);
+    }
+    else {
+        size_t buflen = _base64_decode_length(data->length);
+        if (!buflen) {
+            return CODECEmptyInput;
+        }
+        
+        CODECDATA_REINIT(ptr, buflen);
+        if (!_base64_decode(ptr, data->data, data->length, ptr->result->data, &ptr->result->length)) {
+            return CODECInvalidInput;
+        }
+    }
+    
+    return CODECOk;
 }
 
 #pragma mark - encoding
@@ -69,11 +151,10 @@ static const char _urlsafe_table[] = {
     '4', '5', '6', '7', '8', '9', '-',
     '_'};
 
-size_t base64_encode_length(cdc_base64 *ins, size_t datalen) {
+size_t _base64_encode_length(struct base64 *p, size_t datalen) {
     size_t times = 0, len = 0;
     int mod = 0;
     
-    cdcassert(ins);
     if (!datalen) {
         return 0;
     }
@@ -81,7 +162,7 @@ size_t base64_encode_length(cdc_base64 *ins, size_t datalen) {
     times = datalen / 3;
     mod = datalen % 3;
     
-    if (ins->opt & base64opt_padding) {
+    if (p->opt & base64opt_padding) {
         mod = 4;
     }
     else {
@@ -89,15 +170,15 @@ size_t base64_encode_length(cdc_base64 *ins, size_t datalen) {
     }
     
     len = times * 4 + mod;
-    if (ins->opt & base64opt_chunk) {
+    if (p->opt & base64opt_chunk) {
         len += (len  - 1) / _chunklen * 2;
     }
     
     return len;
 }
 
-static size_t _fill_chunk(cdc_base64 *ins, char *buf, size_t idx) {
-    if ((ins->opt & base64opt_chunk)
+static size_t _fill_chunk(struct base64 *p, byte *buf, size_t idx) {
+    if ((p->opt & base64opt_chunk)
         && idx > 0
         && (idx % _chunklen == 0)) {
         buf[idx++] = '\r';
@@ -107,12 +188,12 @@ static size_t _fill_chunk(cdc_base64 *ins, char *buf, size_t idx) {
     return idx;
 }
 
-static size_t _encode_fillbuf(cdc_base64 *ins, const byte *data, char *buf, size_t idx) {
-    idx = _fill_chunk(ins, buf, idx);
+static size_t _encode_fillbuf(struct base64 *p, const byte *data, byte *buf, size_t idx) {
+    idx = _fill_chunk(p, buf, idx);
     
     uint32_t t = data[2] | ((data[1] << 8) & 0xff00) | ((data[0] << 16) & 0xff0000);
     
-    const char *table = ins->opt & base64opt_unsafechar ? _standard_table : _urlsafe_table;
+    const char *table = p->opt & base64opt_unsafechar ? _standard_table : _urlsafe_table;
     buf[idx++] = table[(t >> 18) & 0x3f];
     buf[idx++] = table[(t >> 12) & 0x3f];
     buf[idx++] = table[(t >> 6) & 0x3f];
@@ -121,10 +202,10 @@ static size_t _encode_fillbuf(cdc_base64 *ins, const byte *data, char *buf, size
     return idx;
 }
 
-static size_t _fill_left_buf(cdc_base64 *ins,
+static size_t _fill_left_buf(struct base64 *p,
                           const byte *data, size_t datalen,
-                          char *buf, size_t idx) {
-    idx = _fill_chunk(ins, buf, idx);
+                          byte *buf, size_t idx) {
+    idx = _fill_chunk(p, buf, idx);
     
     int left = (int)(datalen % 3);
     if (!left) {
@@ -135,12 +216,12 @@ static size_t _fill_left_buf(cdc_base64 *ins,
     size_t i = datalen - left;
     t = (data[i++] << 8) & 0xff00;
     
-    const char *table = ins->opt & base64opt_unsafechar ? _standard_table : _urlsafe_table;
+    const char *table = p->opt & base64opt_unsafechar ? _standard_table : _urlsafe_table;
     if (i >= datalen) {
         buf[idx++] = table[(t >> 10) & 0x3f];
         buf[idx++] = table[(t >> 4) & 0x3f];
         
-        if (ins->opt & base64opt_padding) {
+        if (p->opt & base64opt_padding) {
             buf[idx++] = '=';
             buf[idx++] = '=';
         }
@@ -152,7 +233,7 @@ static size_t _fill_left_buf(cdc_base64 *ins,
         buf[idx++] = table[(t >> 12) & 0x3f];
         buf[idx++] = table[(t >> 6) & 0x3f];
         
-        if (ins->opt & base64opt_padding) {
+        if (p->opt & base64opt_padding) {
             buf[idx++] = '=';
         }
     }
@@ -160,10 +241,10 @@ static size_t _fill_left_buf(cdc_base64 *ins,
     return idx;
 }
 
-void base64_encode(cdc_base64 *ins,
+void _base64_encode(struct base64 *p,
                    const byte *data, size_t datalen,
-                   char *buf, size_t *buflen) {
-    cdcassert(ins);
+                   byte *buf, size_t *buflen) {
+    cdcassert(p);
     cdcassert(buf);
     cdcassert(buflen);
     if (!data || !datalen) {
@@ -174,14 +255,14 @@ void base64_encode(cdc_base64 *ins,
     
     size_t i = 0, idx = 0, n = datalen / 3;
     for (i = 0; i < n; ++i) {
-        idx = _encode_fillbuf(ins, data + i * 3, buf, idx);
+        idx = _encode_fillbuf(p, data + i * 3, buf, idx);
     }
     
-    *buflen = _fill_left_buf(ins, data, datalen, buf, idx);
+    *buflen = _fill_left_buf(p, data, datalen, buf, idx);
 }
 
 #pragma mark - decoding
-size_t base64_decode_length(size_t datalen) {
+size_t _base64_decode_length(size_t datalen) {
     if (!datalen) {
         return 0;
     }
@@ -212,7 +293,7 @@ static const byte _decode_table[] = {
     0x30, 0x31, 0x32, 0x33, 0xff, 0xff, 0xff, 
     0xff
 };
-static size_t _decode_2chars(const char *data, byte *buf, size_t *idx) {
+static size_t _decode_2chars(const byte *data, byte *buf, size_t *idx) {
     byte b0 = _decode_table[data[0]],
     b1 = _decode_table[data[1]];
     
@@ -230,7 +311,7 @@ static size_t _decode_2chars(const char *data, byte *buf, size_t *idx) {
     return 2;
 }
 
-static size_t _decode_3chars(const char *data, byte *buf, size_t *idx) {
+static size_t _decode_3chars(const byte *data, byte *buf, size_t *idx) {
     byte b0 = _decode_table[data[0]],
     b1 = _decode_table[data[1]],
     b2 = _decode_table[data[2]];
@@ -251,7 +332,7 @@ static size_t _decode_3chars(const char *data, byte *buf, size_t *idx) {
     return 3;
 }
 
-static size_t _decode_4chars(const char *data, byte *buf, size_t *idx) {
+static size_t _decode_4chars(const byte *data, byte *buf, size_t *idx) {
     if (data[2] == '=') {
         return _decode_2chars(data, buf, idx) ? 4 : 0;
     }
@@ -282,7 +363,10 @@ static size_t _decode_4chars(const char *data, byte *buf, size_t *idx) {
     return 4;
 }
 
-BOOL base64_decode(const char *data, size_t datalen, byte *buf, size_t *buflen) {
+BOOL _base64_decode(struct base64* p,
+                    const byte *data, size_t datalen,
+                    byte *buf, size_t *buflen) {
+    cdcassert(p);
     cdcassert(buflen);
     cdcassert(buf);
     if (!data || !datalen) {

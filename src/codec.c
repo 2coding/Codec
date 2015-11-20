@@ -26,24 +26,85 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef base64_h
-#define base64_h
-#include "cdcdefs.h"
+#include "codec.h"
 #include "codecbase.h"
+#include "base64.h"
 
-typedef enum {
-    base64opt_urlsafe = 0,
-    base64opt_chunk = 1 << 0,
-    base64opt_padding = 1 << 1,
-    base64opt_unsafechar = 1 << 2,
+CODEC codec_init(CODECProtocol protocol, CODECMethod method) {
+    CODECBase *p = 0;
+    switch (protocol) {
+        case CODECBase64:
+            p = init(method, sizeof(struct base64), base64_init);
+            break;
+            
+        default:
+            break;
+    }
     
-    base64opt_standard = base64opt_chunk | base64opt_padding | base64opt_unsafechar
-}cdc_base64opt;
+    if (p && !p->work) {
+        cleanup(p);
+        p = 0;
+    }
+    
+    return p;
+}
 
-CODEC_STRUCT_DECLARE(base64)
-cdc_base64opt opt;
-CODEC_STRUCT_DECLARE_END;
+void codec_cleanup(CODEC codec) {
+    CODECBase *p = codec;
+    cleanup(p);
+}
 
-void *base64_init(CODECBase *p);
+CODECode codec_setup(CODEC codec, CODECOption opt, ...) {
+    if (!codec) {
+        return CODECNullPtr;
+    }
+    
+    CODECBase *p = codec;
+    va_list args;
+    
+    if (p->setup) {
+        va_start(args, opt);
+        p->code = p->setup(p, opt, args);
+        va_end(args);
+    }
+    
+    return p->code;
+}
 
-#endif /* base64_h */
+const CODECData * codec_work(CODEC codec, const CODECData *data) {
+    if (!codec) {
+        return 0;
+    }
+    
+    CODECBase *p = codec;
+    if (!data || !data->data || !data->length) {
+        p->code = CODECEmptyInput;
+        return 0;
+    }
+    
+    if (p->work) {
+        p->code = p->work(p, data);
+    }
+    
+    return p->code == CODECOk ? p->result : 0;
+}
+
+void codec_reset(CODEC codec) {
+    if (!codec) {
+        return;
+    }
+    
+    CODECBase *p = codec;
+    if (p->reset) {
+        p->reset(p);
+    }
+}
+
+CODECode codec_lasterror(CODEC codec) {
+    if (!codec) {
+        return CODECNullPtr;
+    }
+    
+    CODECBase *p = codec;
+    return p->code;
+}

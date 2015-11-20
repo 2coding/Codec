@@ -26,27 +26,49 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef codec_h
-#define codec_h
+#include "codecbase.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+CODECBase * init(CODECMethod method, size_t size, initfunc fn) {
+    cdcassert(size >= sizeof(CODECBase));
+    if (size < sizeof(CODECBase)) {
+        return 0;
+    }
     
-#include "cdcdefs.h"
+    CODECBase *p = malloc(size);
+    memset(p, 0, size);
     
-    typedef void *CODEC;
-
-    CODEC codec_init(CODECProtocol protocol, CODECMethod method);
-    void codec_cleanup(CODEC codec);
+    p->method = method;
+    p->result = 0;
+    p->code = CODECOk;
     
-    CODECode codec_setup(CODEC codec, CODECOption opt, ...);
-    const CODECData * codec_work(CODEC codec, const CODECData *data);
+    p->init = fn;
     
-    void codec_reset(CODEC codec);
-    CODECode codec_lasterror(CODEC codec);
-
-#ifdef __cplusplus
+    return p->init(p);
 }
-#endif
-#endif /* codec_h */
+
+void cleanup(CODECBase *p) {
+    if (!p) {
+        return;
+    }
+    
+    if (p->cleanup) {
+        p->cleanup(p);
+    }
+    
+    CODECDATA_CLEANUP(p->result);
+    
+    free(p);
+}
+
+CODECData *data_init(size_t len) {
+    cdcassert(len);
+    if (len == 0) {
+        return 0;
+    }
+    
+    CODECData *p = malloc(sizeof(CODECData));
+    p->length = len;
+    p->data = malloc(sizeof(byte) * len);
+    memset(p->data, 0, len * sizeof(byte));
+    return p;
+}

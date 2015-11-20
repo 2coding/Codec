@@ -10,6 +10,8 @@
 		C302BED91BFABACF006EFCA7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C302BED81BFABACF006EFCA7 /* main.cpp */; };
 		C302BEE01BFABB01006EFCA7 /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C302BEDF1BFABB01006EFCA7 /* gtest.framework */; };
 		C302BEE61BFABB1F006EFCA7 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = C302BEE21BFABB1F006EFCA7 /* base64.c */; settings = {ASSET_TAGS = (); }; };
+		C30EB6871BFC6D9C007C766D /* codec.c in Sources */ = {isa = PBXBuildFile; fileRef = C30EB6861BFC6D9C007C766D /* codec.c */; settings = {ASSET_TAGS = (); }; };
+		C30EB68A1BFEF37C007C766D /* codecbase.c in Sources */ = {isa = PBXBuildFile; fileRef = C30EB6881BFEF37C007C766D /* codecbase.c */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,6 +35,9 @@
 		C302BEE41BFABB1F006EFCA7 /* cdcdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cdcdefs.h; sourceTree = "<group>"; };
 		C302BEE51BFABB1F006EFCA7 /* codec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = codec.h; sourceTree = "<group>"; };
 		C302BEEC1BFAC6BA006EFCA7 /* base64_tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = base64_tests.hpp; sourceTree = "<group>"; };
+		C30EB6861BFC6D9C007C766D /* codec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = codec.c; sourceTree = "<group>"; };
+		C30EB6881BFEF37C007C766D /* codecbase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = codecbase.c; sourceTree = "<group>"; };
+		C30EB6891BFEF37C007C766D /* codecbase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = codecbase.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,7 +85,10 @@
 				C302BEE21BFABB1F006EFCA7 /* base64.c */,
 				C302BEE31BFABB1F006EFCA7 /* base64.h */,
 				C302BEE41BFABB1F006EFCA7 /* cdcdefs.h */,
+				C30EB6861BFC6D9C007C766D /* codec.c */,
 				C302BEE51BFABB1F006EFCA7 /* codec.h */,
+				C30EB6881BFEF37C007C766D /* codecbase.c */,
+				C30EB6891BFEF37C007C766D /* codecbase.h */,
 			);
 			name = src;
 			path = ../../../src;
@@ -151,6 +159,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C30EB6871BFC6D9C007C766D /* codec.c in Sources */,
+				C30EB68A1BFEF37C007C766D /* codecbase.c in Sources */,
 				C302BEE61BFABB1F006EFCA7 /* base64.c in Sources */,
 				C302BED91BFABACF006EFCA7 /* main.cpp in Sources */,
 			);
