@@ -28,8 +28,8 @@
 
 #ifndef base64_h
 #define base64_h
-#include "cdcdefs.h"
 #include "codecbase.h"
+#include "baseN.h"
 
 typedef enum {
     base64opt_urlsafe = 0,
@@ -42,6 +42,7 @@ typedef enum {
 
 CODEC_STRUCT_DECLARE(base64)
 cdc_base64opt opt;
+baseN bn;
 CODEC_STRUCT_DECLARE_END;
 
 void *base64_init(CODECBase *p);

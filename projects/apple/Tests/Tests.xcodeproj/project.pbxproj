@@ -9,9 +9,11 @@
 /* Begin PBXBuildFile section */
 		C302BED91BFABACF006EFCA7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C302BED81BFABACF006EFCA7 /* main.cpp */; };
 		C302BEE01BFABB01006EFCA7 /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C302BEDF1BFABB01006EFCA7 /* gtest.framework */; };
-		C302BEE61BFABB1F006EFCA7 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = C302BEE21BFABB1F006EFCA7 /* base64.c */; settings = {ASSET_TAGS = (); }; };
-		C30EB6871BFC6D9C007C766D /* codec.c in Sources */ = {isa = PBXBuildFile; fileRef = C30EB6861BFC6D9C007C766D /* codec.c */; settings = {ASSET_TAGS = (); }; };
-		C30EB68A1BFEF37C007C766D /* codecbase.c in Sources */ = {isa = PBXBuildFile; fileRef = C30EB6881BFEF37C007C766D /* codecbase.c */; settings = {ASSET_TAGS = (); }; };
+		C302BEE61BFABB1F006EFCA7 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = C302BEE21BFABB1F006EFCA7 /* base64.c */; };
+		C30EB6871BFC6D9C007C766D /* codec.c in Sources */ = {isa = PBXBuildFile; fileRef = C30EB6861BFC6D9C007C766D /* codec.c */; };
+		C30EB68A1BFEF37C007C766D /* codecbase.c in Sources */ = {isa = PBXBuildFile; fileRef = C30EB6881BFEF37C007C766D /* codecbase.c */; };
+		C374AB5D1C0141E7009BE616 /* base32.c in Sources */ = {isa = PBXBuildFile; fileRef = C374AB5B1C0141E7009BE616 /* base32.c */; };
+		C374AB601C01442F009BE616 /* baseN.c in Sources */ = {isa = PBXBuildFile; fileRef = C374AB5E1C01442F009BE616 /* baseN.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +40,10 @@
 		C30EB6861BFC6D9C007C766D /* codec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = codec.c; sourceTree = "<group>"; };
 		C30EB6881BFEF37C007C766D /* codecbase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = codecbase.c; sourceTree = "<group>"; };
 		C30EB6891BFEF37C007C766D /* codecbase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = codecbase.h; sourceTree = "<group>"; };
+		C374AB5B1C0141E7009BE616 /* base32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base32.c; sourceTree = "<group>"; };
+		C374AB5C1C0141E7009BE616 /* base32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base32.h; sourceTree = "<group>"; };
+		C374AB5E1C01442F009BE616 /* baseN.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = baseN.c; sourceTree = "<group>"; };
+		C374AB5F1C01442F009BE616 /* baseN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = baseN.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +95,10 @@
 				C302BEE51BFABB1F006EFCA7 /* codec.h */,
 				C30EB6881BFEF37C007C766D /* codecbase.c */,
 				C30EB6891BFEF37C007C766D /* codecbase.h */,
+				C374AB5B1C0141E7009BE616 /* base32.c */,
+				C374AB5C1C0141E7009BE616 /* base32.h */,
+				C374AB5E1C01442F009BE616 /* baseN.c */,
+				C374AB5F1C01442F009BE616 /* baseN.h */,
 			);
 			name = src;
 			path = ../../../src;
@@ -160,7 +170,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				C30EB6871BFC6D9C007C766D /* codec.c in Sources */,
+				C374AB5D1C0141E7009BE616 /* base32.c in Sources */,
 				C30EB68A1BFEF37C007C766D /* codecbase.c in Sources */,
+				C374AB601C01442F009BE616 /* baseN.c in Sources */,
 				C302BEE61BFABB1F006EFCA7 /* base64.c in Sources */,
 				C302BED91BFABACF006EFCA7 /* main.cpp in Sources */,
 			);

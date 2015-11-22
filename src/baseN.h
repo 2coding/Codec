@@ -26,59 +26,28 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef cdcdefs_h
-#define cdcdefs_h
+#ifndef baseN_h
+#define baseN_h
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
+#include "cdcdefs.h"
 
-typedef long int BOOL;
-#define TRUE 1
-#define FALSE 0
-
-typedef uint8_t byte;
-
-#define cdcassert assert
-
-typedef enum {
-    CODECBase64,
-    CODECBase32
-}CODECProtocol;
-
-typedef enum {
-    CODECEncoding,
-    CODECDecoding,
-}CODECMethod;
-
-typedef enum {
-    CODECOk,
+typedef struct baseN{
+    byte group;
+    byte bitslen;
+    byte egroup;
+    BOOL chunkled;
+    BOOL padding;
     
-    CODECIgnoredOption,
-    
-    CODECEmptyInput,
-    CODECInvalidInput,
-    
-    CODECNullPtr
-}CODECode;
+    char *table;
+    size_t mask;
+}baseN;
 
-typedef enum {
-    CODECBaseNChunkled,
-    CODECBaseNPadding,
-    
-    CODECBase64SafeChar,
-    CODECBase64UrlSafe
-    
-}CODECOption;
+void baseN_init(baseN *p, byte group, byte bitslen, char *table, size_t mask);
 
-typedef struct {
-    byte *data;
-    size_t length;
-}CODECData;
+size_t baseN_encoding_length(const baseN *p, size_t datalen);
+void baseN_encoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
 
-#define CODECDATA_CLEANUP(pd) {if(pd) {free(pd->data); free(pd);}}
+size_t baseN_decoding_length(const baseN *p, size_t datalen);
 
-#endif /* cdcdefs_h */
+
+#endif /* baseN_h */

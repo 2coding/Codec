@@ -29,12 +29,17 @@
 #include "codec.h"
 #include "codecbase.h"
 #include "base64.h"
+#include "base32.h"
 
 CODEC codec_init(CODECProtocol protocol, CODECMethod method) {
     CODECBase *p = 0;
     switch (protocol) {
         case CODECBase64:
             p = init(method, sizeof(struct base64), base64_init);
+            break;
+            
+        case CODECBase32:
+            p = init(method, sizeof(struct base32), base32_init);
             break;
             
         default:

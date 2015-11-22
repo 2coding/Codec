@@ -26,59 +26,14 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef cdcdefs_h
-#define cdcdefs_h
+#ifndef base32_h
+#define base32_h
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
+#include "codecbase.h"
 
-typedef long int BOOL;
-#define TRUE 1
-#define FALSE 0
+CODEC_STRUCT_DECLARE(base32)
+CODEC_STRUCT_DECLARE_END;
 
-typedef uint8_t byte;
+void *base32_init(CODECBase *p);
 
-#define cdcassert assert
-
-typedef enum {
-    CODECBase64,
-    CODECBase32
-}CODECProtocol;
-
-typedef enum {
-    CODECEncoding,
-    CODECDecoding,
-}CODECMethod;
-
-typedef enum {
-    CODECOk,
-    
-    CODECIgnoredOption,
-    
-    CODECEmptyInput,
-    CODECInvalidInput,
-    
-    CODECNullPtr
-}CODECode;
-
-typedef enum {
-    CODECBaseNChunkled,
-    CODECBaseNPadding,
-    
-    CODECBase64SafeChar,
-    CODECBase64UrlSafe
-    
-}CODECOption;
-
-typedef struct {
-    byte *data;
-    size_t length;
-}CODECData;
-
-#define CODECDATA_CLEANUP(pd) {if(pd) {free(pd->data); free(pd);}}
-
-#endif /* cdcdefs_h */
+#endif /* base32_h */
