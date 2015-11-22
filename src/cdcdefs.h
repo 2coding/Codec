@@ -56,6 +56,8 @@ typedef enum {
 typedef enum {
     CODECOk,
     
+    CODECIgnoredOption,
+    
     CODECEmptyInput,
     CODECInvalidInput,
     

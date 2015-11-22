@@ -52,6 +52,7 @@ void *base64_init(CODECBase *p) {
 CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
     long larg = 0;
     struct base64 *ptr = (struct base64 *)p;
+    CODECode code = CODECOk;
     switch (opt) {
         case CODECBaseNChunkled:
             larg = va_arg(args, long);
@@ -59,7 +60,7 @@ CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
                 ptr->opt |= base64opt_chunk;
             }
             else {
-                ptr->opt &= !base64opt_chunk;
+                ptr->opt &= ~base64opt_chunk;
             }
             break;
             
@@ -69,14 +70,14 @@ CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
                 ptr->opt |= base64opt_padding;
             }
             else {
-                ptr->opt &= !base64opt_padding;
+                ptr->opt &= ~base64opt_padding;
             }
             break;
             
         case CODECBase64SafeChar:
             larg = va_arg(args, long);
             if (larg) {
-                ptr->opt &= !base64opt_unsafechar;
+                ptr->opt &= ~base64opt_unsafechar;
             }
             else {
                 ptr->opt |= base64opt_unsafechar;
@@ -94,10 +95,11 @@ CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
             break;
             
         default:
+            code = CODECIgnoredOption;
             break;
     }
     
-    return CODECOk;
+    return code;
 }
 
 CODECode _base64_work(CODECBase *p, const CODECData *data) {

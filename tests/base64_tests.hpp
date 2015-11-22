@@ -32,9 +32,9 @@
 #include <gtest/gtest.h>
 #include "codec.h"
 
-static std::string _base64encode(const std::string &data, bool urlsafe) {
+static std::string _base64encode(const std::string &data, CODECOption opt, long v) {
     CODEC p = codec_init(CODECBase64, CODECEncoding);
-    codec_setup(p, CODECBase64UrlSafe, urlsafe ? 1 : 0);
+    codec_setup(p, opt, v);
     CODECData cdata;
     cdata.data = (byte *)data.data();
     cdata.length = data.length();
@@ -70,29 +70,40 @@ static std::string _base64decode(const std::string &data, CODECode &code) {
 
 TEST(base64_tests, encode_option)
 {
+    std::string result = _base64encode("abcdefghijklmnopqrstuvwxyz-_0123456789/!?ABCDEFGHIJKLMNOPQRSTUVWXYZ", CODECBaseNChunkled, 0);
+    EXPECT_EQ(result, "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXotXzAxMjM0NTY3ODkvIT9BQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWg==");
+    
+    result = _base64encode("abcdefghijklmnopqrstuvwxyz-_0123456789/!?ABCDEFGHIJKLMNOPQRSTUVWXYZ", CODECBaseNPadding, 0);
+    EXPECT_EQ(result, "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXotXzAxMjM0NTY3ODkvIT9BQkNERUZHSElKS0xNTk9Q\r\nUVJTVFVWV1hZWg");
+}
+
+TEST(base64_tests, ignore_option)
+{
+    CODEC p  = codec_init(CODECBase64, CODECEncoding);
+    codec_cleanup(p);
 }
 
 TEST(base64_tests, encode_standard)
 {
-    std::string result = _base64encode("hello world", false);
+    std::string result = _base64encode("hello world", CODECBase64UrlSafe, 0);
     EXPECT_EQ(result, "aGVsbG8gd29ybGQ=");
     
-    result = _base64encode("abcdefghijklmnopqrstuvwxyz-_0123456789/!?ABCDEFGHIJKLMNOPQRSTUVWXYZ", false);
+    result = _base64encode("abcdefghijklmnopqrstuvwxyz-_0123456789/!?ABCDEFGHIJKLMNOPQRSTUVWXYZ", CODECBase64UrlSafe, 0);
     EXPECT_EQ(result, "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXotXzAxMjM0NTY3ODkvIT9BQkNERUZHSElKS0xNTk9Q\r\nUVJTVFVWV1hZWg==");
 }
 
 TEST(base64_tests, encode_urlsafe)
 {
-    std::string result = _base64encode("hello world", true);
+    std::string result = _base64encode("hello world", CODECBase64UrlSafe, 1L);
     EXPECT_EQ(result, "aGVsbG8gd29ybGQ");
     
-    result = _base64encode("abcdefghijklmnopqrstuvwxyz-_0123456789/!?ABCDEFGHIJKLMNOPQRSTUVWXYZ", true);
+    result = _base64encode("abcdefghijklmnopqrstuvwxyz-_0123456789/!?ABCDEFGHIJKLMNOPQRSTUVWXYZ", CODECBase64UrlSafe, 1L);
     EXPECT_EQ(result, "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXotXzAxMjM0NTY3ODkvIT9BQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWg");
 }
 
 TEST(base64_tests, encode_empty)
 {
-    std::string result = _base64encode("", false);
+    std::string result = _base64encode("", CODECBase64UrlSafe, 0L);
     EXPECT_EQ(result, "");
 }
 
