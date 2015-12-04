@@ -26,12 +26,16 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
-#include "base64_tests.hpp"
-#include "base32_tests.hpp"
-#include "base16_tests.hpp"
+#ifndef base16_h
+#define base16_h
 
-int main(int argc, const char * argv[]) {
-    testing::InitGoogleTest(&argc, (char **)argv);
-    return RUN_ALL_TESTS();
-}
+#include "cdcdefs.h"
+#include "codecbase.h"
+
+CODEC_STRUCT_DECLARE(base16)
+BOOL chunkled;
+CODEC_STRUCT_DECLARE_END;
+
+void *base16_init(CODECBase *p);
+
+#endif

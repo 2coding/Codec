@@ -46,7 +46,8 @@ typedef uint8_t byte;
 
 typedef enum {
     CODECBase64,
-    CODECBase32
+    CODECBase32,
+    CODECBase16
 }CODECProtocol;
 
 typedef enum {
