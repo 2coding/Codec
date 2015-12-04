@@ -30,6 +30,7 @@
 #define baseN_h
 
 #include "cdcdefs.h"
+#include "codecbase.h"
 
 typedef struct baseN{
     byte group;
@@ -44,12 +45,8 @@ typedef struct baseN{
 }baseN;
 
 void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, size_t mask);
-
-size_t baseN_encoding_length(const baseN *p, size_t datalen);
-void baseN_encoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
-
-size_t baseN_decoding_length(const baseN *p, size_t datalen);
-BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
+CODECode baseN_setup(baseN *bn, CODECOption opt, va_list args);
+CODECode baseN_work(baseN *bn, CODECBase *p, const CODECData *data);
 
 
 #endif /* baseN_h */

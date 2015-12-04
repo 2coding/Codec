@@ -28,10 +28,10 @@
 
 #ifndef base32_h
 #define base32_h
-
-#include "codecbase.h"
+#include "baseN.h"
 
 CODEC_STRUCT_DECLARE(base32)
+baseN bn;
 CODEC_STRUCT_DECLARE_END;
 
 void *base32_init(CODECBase *p);

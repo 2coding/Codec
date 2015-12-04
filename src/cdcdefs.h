@@ -70,7 +70,9 @@ typedef enum {
     CODECBaseNPadding,
     
     CODECBase64SafeChar,
-    CODECBase64UrlSafe
+    CODECBase64UrlSafe,
+    
+    CODECBase32Hex,
     
 }CODECOption;
 

@@ -30,8 +30,20 @@
 
 static const int _chunklen = 76;
 
+static size_t baseN_encoding_length(const baseN *p, size_t datalen);
+static void baseN_encoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
+
+static size_t baseN_decoding_length(const baseN *p, size_t datalen);
+static BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
+
 void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, size_t mask) {
     cdcassert(p);
+    cdcassert(entable);
+    cdcassert(detable);
+    cdcassert(group > 0);
+    cdcassert(bitslen > 0 && bitslen < 8);
+    cdcassert(mask > 0);
+    
     p->group = group;
     p->bitslen = bitslen;
     p->egroup = group * 8 / bitslen;
@@ -42,6 +54,51 @@ void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable
     p->mask = mask;
 }
 
+CODECode baseN_setup(baseN *bn, CODECOption opt, va_list args) {
+    CODECode code = CODECOk;
+    switch (opt) {
+        case CODECBaseNChunkled:
+            bn->chunkled = va_arg(args, long);
+            break;
+            
+        case CODECBaseNPadding:
+            bn->padding = va_arg(args, long);
+            break;
+            
+        default:
+            code = CODECIgnoredOption;
+            break;
+    }
+    
+    return code;
+}
+
+CODECode baseN_work(baseN *bn, CODECBase *p, const CODECData *data) {
+    if (p->method == CODECEncoding) {
+        size_t buflen = baseN_encoding_length(bn, data->length);
+        if (!buflen) {
+            return CODECEmptyInput;
+        }
+        
+        CODECDATA_REINIT(p, buflen);
+        baseN_encoding(bn, data->data, data->length, p->result->data, &p->result->length);
+    }
+    else {
+        size_t buflen = baseN_decoding_length(bn, data->length);
+        if (!buflen) {
+            return CODECEmptyInput;
+        }
+        
+        CODECDATA_REINIT(p, buflen);
+        if (!baseN_decoding(bn, data->data, data->length, p->result->data, &p->result->length)) {
+            return CODECInvalidInput;
+        }
+    }
+    
+    return CODECOk;
+}
+
+#pragma mark - encoding
 size_t baseN_encoding_length(const baseN *p, size_t datalen) {
     if (!datalen) {
         return 0;
@@ -58,11 +115,16 @@ size_t baseN_encoding_length(const baseN *p, size_t datalen) {
     return len;
 }
 
-#pragma mark - encoding
 static size_t _chunk(const baseN *p, byte *buf, size_t idx) {
+//    if (p->chunkled
+//        && idx > 0
+//        && ((idx % _chunklen == 0) || ((idx + p->egroup - 1) / _chunklen > idx / _chunklen ))) {
+//        buf[idx++] = '\r';
+//        buf[idx++] = '\n';
+//    }
     if (p->chunkled
         && idx > 0
-        && ((idx % _chunklen == 0) || ((idx + p->egroup - 1) / _chunklen > idx / _chunklen ))) {
+        && idx % _chunklen == 0) {
         buf[idx++] = '\r';
         buf[idx++] = '\n';
     }
@@ -71,7 +133,7 @@ static size_t _chunk(const baseN *p, byte *buf, size_t idx) {
 }
 
 static size_t _encoding_group(const baseN *p, const byte *data, byte *buf, size_t idx, byte group) {
-    idx = _chunk(p, buf, idx);
+//    idx = _chunk(p, buf, idx);
     
     size_t i = 0;
     uint64_t t = 0;
@@ -85,6 +147,8 @@ static size_t _encoding_group(const baseN *p, const byte *data, byte *buf, size_
     uint64_t mask = p->mask;
     while (bits > 8) {
         bits -= p->bitslen;
+        
+        idx = _chunk(p, buf, idx);
         buf[idx++] = table[(t >> bits) & mask];
     }
     
@@ -104,6 +168,7 @@ static size_t _encoding_left(const baseN *p, const byte *data, size_t datalen, b
     t = ceilf(t);
     int padding = p->egroup - t;
     while (p->padding && padding > 0) {
+        idx = _chunk(p, buf, idx);
         buf[idx++] = '=';
         --padding;
     }

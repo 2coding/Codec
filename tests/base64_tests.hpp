@@ -26,8 +26,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef base64_hpp
-#define base64_hpp
+#ifndef base64_tests_hpp
+#define base64_tests_hpp
 
 #include <gtest/gtest.h>
 #include "codec.h"

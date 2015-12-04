@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include "base64_tests.hpp"
+#include "base32_tests.hpp"
 
 int main(int argc, const char * argv[]) {
     testing::InitGoogleTest(&argc, (char **)argv);

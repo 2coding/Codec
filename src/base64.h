@@ -28,20 +28,9 @@
 
 #ifndef base64_h
 #define base64_h
-#include "codecbase.h"
 #include "baseN.h"
 
-typedef enum {
-    base64opt_urlsafe = 0,
-    base64opt_chunk = 1 << 0,
-    base64opt_padding = 1 << 1,
-    base64opt_unsafechar = 1 << 2,
-    
-    base64opt_standard = base64opt_chunk | base64opt_padding | base64opt_unsafechar
-}cdc_base64opt;
-
 CODEC_STRUCT_DECLARE(base64)
-cdc_base64opt opt;
 baseN bn;
 CODEC_STRUCT_DECLARE_END;
 
