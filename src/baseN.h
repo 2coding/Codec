@@ -38,16 +38,18 @@ typedef struct baseN{
     BOOL chunkled;
     BOOL padding;
     
-    char *table;
+    char *entable;
+    byte *detable;
     size_t mask;
 }baseN;
 
-void baseN_init(baseN *p, byte group, byte bitslen, char *table, size_t mask);
+void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, size_t mask);
 
 size_t baseN_encoding_length(const baseN *p, size_t datalen);
 void baseN_encoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
 
 size_t baseN_decoding_length(const baseN *p, size_t datalen);
+BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
 
 
 #endif /* baseN_h */

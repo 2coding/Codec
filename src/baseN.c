@@ -30,14 +30,15 @@
 
 static const int _chunklen = 76;
 
-void baseN_init(baseN *p, byte group, byte bitslen, char *table, size_t mask) {
+void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, size_t mask) {
     cdcassert(p);
     p->group = group;
     p->bitslen = bitslen;
     p->egroup = group * 8 / bitslen;
     p->chunkled = TRUE;
     p->padding = TRUE;
-    p->table = table;
+    p->entable = entable;
+    p->detable = detable;
     p->mask = mask;
 }
 
@@ -80,7 +81,7 @@ static size_t _encoding_group(const baseN *p, const byte *data, byte *buf, size_
     }
     
     int bits = (group + 1) * 8;
-    const char *table = p->table;
+    const char *table = p->entable;
     uint64_t mask = p->mask;
     while (bits > 8) {
         bits -= p->bitslen;
@@ -137,4 +138,67 @@ size_t baseN_decoding_length(const baseN *p, size_t datalen) {
     double len = (double)datalen / p->egroup;
     len = ceil(len);
     return len * p->group;
+}
+
+long _check_char(const baseN *p, byte c) {
+    if (c == '\r' || c == '\n' || c == '=') {
+        return 0;
+    }
+    
+    if (p->detable[c] == 0xff) {
+        return -1;
+    }
+    
+    return 1;
+}
+
+size_t _decoding_group(const baseN *p, uint64_t tmp, size_t group, byte *buf, size_t idx) {
+    size_t k = 0, bitlens = 8 * (p->group - 1);
+    for (k = 0; k < group; ++k) {
+        buf[idx++] = (tmp >>  (bitlens -  8 * k)) & 0xff;
+    }
+    
+    return idx;
+}
+
+BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen) {
+    cdcassert(p);
+    cdcassert(buflen);
+    cdcassert(buf);
+    if (!data || !datalen) {
+        buf[0] = 0;
+        *buflen = 0;
+        return TRUE;
+    }
+    
+    size_t i = 0, k = 0, idx = 0;
+    uint64_t t = 0;
+    long ret = 0;
+    const byte *table = p->detable;
+    uint64_t mask = p->mask;
+    const byte bitlens = p->bitslen * (p->egroup - 1);
+    for (i = 0; i < datalen; ++i) {
+        ret = _check_char(p, data[i]);
+        if (ret == 0) {
+            continue;
+        }
+        else if (ret < 0) {
+            return FALSE;
+        }
+        
+        t |= (table[data[i]] & mask) << (bitlens - p->bitslen * k);
+        ++k;
+        if (k == p->egroup) {
+            idx = _decoding_group(p, t, p->group, buf, idx);
+            k = 0;
+            t = 0;
+        }
+    }
+    
+    if (k > 0 && t != 0) {
+        idx = _decoding_group(p, t, k * p->bitslen / 8, buf, idx);
+    }
+    
+    *buflen = idx;
+    return TRUE;
 }

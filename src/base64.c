@@ -28,8 +28,6 @@
 
 #include "base64.h"
 
-static const int _chunklen = 76;
-
 static const char _standard_table[] = {
     'A', 'B', 'C', 'D', 'E', 'F', 'G',
     'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -54,11 +52,27 @@ static const char _urlsafe_table[] = {
     '4', '5', '6', '7', '8', '9', '-',
     '_'};
 
-static void _base64_encode(struct base64 *p,
-                           const byte *data, size_t datalen,
-                           byte *buf, size_t *buflen);
-static size_t _base64_decode_length(size_t datalen);
-static BOOL _base64_decode(struct base64* p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
+static const byte _decode_table[] = {
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0x3e, 0xff, 0x3e, 0xff, 0x3f, 0x34,
+    0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b,
+    0x3c, 0x3d, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0x00, 0x01, 0x02, 0x03, 0x04,
+    0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+    0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12,
+    0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
+    0xff, 0xff, 0xff, 0xff, 0x3f, 0xff, 0x1a,
+    0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21,
+    0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
+    0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
+    0x30, 0x31, 0x32, 0x33, 0xff, 0xff, 0xff,
+    0xff
+};
 
 static CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args);
 static CODECode _base64_work(CODECBase *p, const CODECData *data);
@@ -70,7 +84,7 @@ void *base64_init(CODECBase *p) {
     ptr->setup = _base64_setopt;
     ptr->work = _base64_work;
     
-    baseN_init(&ptr->bn, 3, 6, (char *)_standard_table, 0x3f);
+    baseN_init(&ptr->bn, 3, 6, (char *)_standard_table, (byte *)_decode_table, 0x3f);
     return ptr;
 }
 
@@ -109,7 +123,7 @@ CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
             else {
                 ptr->opt |= base64opt_unsafechar;
             }
-            ptr->bn.table = larg ? (char *)_urlsafe_table : (char *)_standard_table;
+            ptr->bn.entable = larg ? (char *)_urlsafe_table : (char *)_standard_table;
             break;
             
         case CODECBase64UrlSafe:
@@ -122,7 +136,7 @@ CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
             }
             ptr->bn.chunkled = !larg;
             ptr->bn.padding = !larg;
-            ptr->bn.table = larg ? (char *)_urlsafe_table : (char *)_standard_table;
+            ptr->bn.entable = larg ? (char *)_urlsafe_table : (char *)_standard_table;
             break;
             
         default:
@@ -151,239 +165,10 @@ CODECode _base64_work(CODECBase *p, const CODECData *data) {
         }
         
         CODECDATA_REINIT(ptr, buflen);
-        if (!_base64_decode(ptr, data->data, data->length, ptr->result->data, &ptr->result->length)) {
+        if (!baseN_decoding(&ptr->bn, data->data, data->length, ptr->result->data, &ptr->result->length)) {
             return CODECInvalidInput;
         }
     }
     
     return CODECOk;
-}
-
-#pragma mark - encoding
-static size_t _fill_chunk(struct base64 *p, byte *buf, size_t idx) {
-    if ((p->opt & base64opt_chunk)
-        && idx > 0
-        && (idx % _chunklen == 0)) {
-        buf[idx++] = '\r';
-        buf[idx++] = '\n';
-    }
-    
-    return idx;
-}
-
-static size_t _encode_fillbuf(struct base64 *p, const byte *data, byte *buf, size_t idx) {
-    idx = _fill_chunk(p, buf, idx);
-    
-    uint32_t t = data[2] | ((data[1] << 8) & 0xff00) | ((data[0] << 16) & 0xff0000);
-    
-    const char *table = p->opt & base64opt_unsafechar ? _standard_table : _urlsafe_table;
-    buf[idx++] = table[(t >> 18) & 0x3f];
-    buf[idx++] = table[(t >> 12) & 0x3f];
-    buf[idx++] = table[(t >> 6) & 0x3f];
-    buf[idx++] = table[t & 0x3f];
-    
-    return idx;
-}
-
-static size_t _fill_left_buf(struct base64 *p,
-                          const byte *data, size_t datalen,
-                          byte *buf, size_t idx) {
-    idx = _fill_chunk(p, buf, idx);
-    
-    int left = (int)(datalen % 3);
-    if (!left) {
-        return idx;
-    }
-    
-    uint32_t t = 0;
-    size_t i = datalen - left;
-    t = (data[i++] << 8) & 0xff00;
-    
-    const char *table = p->opt & base64opt_unsafechar ? _standard_table : _urlsafe_table;
-    if (i >= datalen) {
-        buf[idx++] = table[(t >> 10) & 0x3f];
-        buf[idx++] = table[(t >> 4) & 0x3f];
-        
-        if (p->opt & base64opt_padding) {
-            buf[idx++] = '=';
-            buf[idx++] = '=';
-        }
-    }
-    else {
-        t = (t << 8) & 0xff0000;
-        t |= ((data[i] << 8) & 0xff00);
-        buf[idx++] = table[(t >> 18) & 0x3f];
-        buf[idx++] = table[(t >> 12) & 0x3f];
-        buf[idx++] = table[(t >> 6) & 0x3f];
-        
-        if (p->opt & base64opt_padding) {
-            buf[idx++] = '=';
-        }
-    }
-    
-    return idx;
-}
-
-void _base64_encode(struct base64 *p,
-                   const byte *data, size_t datalen,
-                   byte *buf, size_t *buflen) {
-    cdcassert(p);
-    cdcassert(buf);
-    cdcassert(buflen);
-    if (!data || !datalen) {
-        *buflen = 0;
-        buf[0] = 0;
-        return;
-    }
-    
-    size_t i = 0, idx = 0, n = datalen / 3;
-    for (i = 0; i < n; ++i) {
-        idx = _encode_fillbuf(p, data + i * 3, buf, idx);
-    }
-    
-    *buflen = _fill_left_buf(p, data, datalen, buf, idx);
-}
-
-#pragma mark - decoding
-size_t _base64_decode_length(size_t datalen) {
-    if (!datalen) {
-        return 0;
-    }
-    
-    double len = datalen / 4.0;
-    len = ceil(len);
-    return len * 3;
-}
-
-static const byte _decode_table[] = {
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0x3e, 0xff, 0x3e, 0xff, 0x3f, 0x34,
-    0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b,
-    0x3c, 0x3d, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0x00, 0x01, 0x02, 0x03, 0x04,
-    0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
-    0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12,
-    0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
-    0xff, 0xff, 0xff, 0xff, 0x3f, 0xff, 0x1a,
-    0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21,
-    0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
-    0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
-    0x30, 0x31, 0x32, 0x33, 0xff, 0xff, 0xff, 
-    0xff
-};
-static size_t _decode_2chars(const byte *data, byte *buf, size_t *idx) {
-    byte b0 = _decode_table[data[0]],
-    b1 = _decode_table[data[1]];
-    
-    if (b0 == 0xff
-        || b1 == 0xff) {
-        return 0;
-    }
-    
-    uint32_t t = (b1 & 0x3f) | ((b0 & 0x3f) << 6);
-    size_t i = *idx;
-    //6 + 6 = 8 + 4
-    buf[i++] = (t >> 4) & 0xff;
-    *idx = i;
-    
-    return 2;
-}
-
-static size_t _decode_3chars(const byte *data, byte *buf, size_t *idx) {
-    byte b0 = _decode_table[data[0]],
-    b1 = _decode_table[data[1]],
-    b2 = _decode_table[data[2]];
-    
-    if (b0 == 0xff
-        || b1 == 0xff
-        || b2 == 0xff) {
-        return 0;
-    }
-    
-    uint32_t t = (b2 & 0x3f) | ((b1 & 0x3f) << 6) | ((b0 & 0x3f) << 12);
-    size_t i = *idx;
-    //6 + 6 + 6 = 8 + 8 + 2
-    buf[i++] = (t >> 10) & 0xff;
-    buf[i++] = (t >> 2) & 0xff;
-    *idx = i;
-    
-    return 3;
-}
-
-static size_t _decode_4chars(const byte *data, byte *buf, size_t *idx) {
-    if (data[2] == '=') {
-        return _decode_2chars(data, buf, idx) ? 4 : 0;
-    }
-    
-    if (data[3] == '=') {
-        return _decode_3chars(data, buf, idx) ? 4 : 0;
-    }
-    
-    byte b0 = _decode_table[data[0]],
-        b1 = _decode_table[data[1]],
-        b2 = _decode_table[data[2]],
-        b3 = _decode_table[data[3]];
-    
-    if (b0 == 0xff
-        || b1 == 0xff
-        || b2 == 0xff
-        || b3 == 0xff) {
-        return 0;
-    }
-    
-    uint32_t t = (b3 & 0x3f) | ((b2 & 0x3f) << 6) | ((b1 & 0x3f) << 12) | ((b0 & 0x3f) << 18);
-    size_t i = *idx;
-    buf[i++] = (t >> 16) & 0xff;
-    buf[i++] = (t >> 8) & 0xff;
-    buf[i++] = t & 0xff;
-    *idx = i;
-    
-    return 4;
-}
-
-BOOL _base64_decode(struct base64* p,
-                    const byte *data, size_t datalen,
-                    byte *buf, size_t *buflen) {
-    cdcassert(p);
-    cdcassert(buflen);
-    cdcassert(buf);
-    if (!data || !datalen) {
-        buf[0] = 0;
-        *buflen = 0;
-        return TRUE;
-    }
-    
-    size_t i = 0, idx = 0, n = 0;
-    while (i < datalen) {
-        if (data[i] == '\r') {
-            i += 2;
-        }
-        
-        n = 0;
-        if (i + 3 < datalen) {
-            if (!(n = _decode_4chars(data + i, buf, &idx))) {
-                return FALSE;
-            }
-        }
-        else if (i + 2 < datalen) {
-            if (!(n = _decode_3chars(data + i, buf, &idx))) {
-                return FALSE;
-            }
-        }
-        else if (i + 1 < datalen) {
-            if (!(n = _decode_2chars(data + i, buf, &idx))) {
-                return FALSE;
-            }
-        }
-        
-        i += n;
-    }
-    
-    *buflen = idx;
-    return TRUE;
 }
