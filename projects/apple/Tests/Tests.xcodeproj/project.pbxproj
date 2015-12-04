@@ -14,6 +14,7 @@
 		C30EB68A1BFEF37C007C766D /* codecbase.c in Sources */ = {isa = PBXBuildFile; fileRef = C30EB6881BFEF37C007C766D /* codecbase.c */; };
 		C374AB5D1C0141E7009BE616 /* base32.c in Sources */ = {isa = PBXBuildFile; fileRef = C374AB5B1C0141E7009BE616 /* base32.c */; };
 		C374AB601C01442F009BE616 /* baseN.c in Sources */ = {isa = PBXBuildFile; fileRef = C374AB5E1C01442F009BE616 /* baseN.c */; };
+		C3F284DB1C11888500B2F4D2 /* base16.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F284D91C11888500B2F4D2 /* base16.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,6 +46,9 @@
 		C374AB5E1C01442F009BE616 /* baseN.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = baseN.c; sourceTree = "<group>"; };
 		C374AB5F1C01442F009BE616 /* baseN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = baseN.h; sourceTree = "<group>"; };
 		C3F284D81C116D1500B2F4D2 /* base32_tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = base32_tests.hpp; sourceTree = "<group>"; };
+		C3F284D91C11888500B2F4D2 /* base16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base16.c; sourceTree = "<group>"; };
+		C3F284DA1C11888500B2F4D2 /* base16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base16.h; sourceTree = "<group>"; };
+		C3F284DC1C118D5700B2F4D2 /* base16_tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = base16_tests.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +93,8 @@
 		C302BEE11BFABB1F006EFCA7 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C3F284D91C11888500B2F4D2 /* base16.c */,
+				C3F284DA1C11888500B2F4D2 /* base16.h */,
 				C302BEE21BFABB1F006EFCA7 /* base64.c */,
 				C302BEE31BFABB1F006EFCA7 /* base64.h */,
 				C302BEE41BFABB1F006EFCA7 /* cdcdefs.h */,
@@ -108,6 +114,7 @@
 		C302BEEA1BFAC0EC006EFCA7 /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				C3F284DC1C118D5700B2F4D2 /* base16_tests.hpp */,
 				C3F284D81C116D1500B2F4D2 /* base32_tests.hpp */,
 				C302BEEC1BFAC6BA006EFCA7 /* base64_tests.hpp */,
 			);
@@ -175,6 +182,7 @@
 				C374AB5D1C0141E7009BE616 /* base32.c in Sources */,
 				C30EB68A1BFEF37C007C766D /* codecbase.c in Sources */,
 				C374AB601C01442F009BE616 /* baseN.c in Sources */,
+				C3F284DB1C11888500B2F4D2 /* base16.c in Sources */,
 				C302BEE61BFABB1F006EFCA7 /* base64.c in Sources */,
 				C302BED91BFABACF006EFCA7 /* main.cpp in Sources */,
 			);

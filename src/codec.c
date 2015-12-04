@@ -30,6 +30,7 @@
 #include "codecbase.h"
 #include "base64.h"
 #include "base32.h"
+#include "base16.h"
 
 CODEC codec_init(CODECProtocol protocol, CODECMethod method) {
     CODECBase *p = 0;
@@ -40,6 +41,10 @@ CODEC codec_init(CODECProtocol protocol, CODECMethod method) {
             
         case CODECBase32:
             p = init(method, sizeof(struct base32), base32_init);
+            break;
+            
+        case CODECBase16:
+            p = init(method, sizeof(struct base16), base16_init);
             break;
             
         default:

@@ -26,12 +26,63 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
-#include "base64_tests.hpp"
-#include "base32_tests.hpp"
-#include "base16_tests.hpp"
+#ifndef base16_tests_hpp
+#define base16_tests_hpp
+#include <gtest/gtest.h>
+#include "codec.h"
 
-int main(int argc, const char * argv[]) {
-    testing::InitGoogleTest(&argc, (char **)argv);
-    return RUN_ALL_TESTS();
+static std::string _base16encode(const std::string &data) {
+    CODEC p = codec_init(CODECBase16, CODECEncoding);
+    CODECData cdata;
+    cdata.data = (byte *)data.data();
+    cdata.length = data.length();
+    const CODECData *buf = codec_work(p, &cdata);
+    if (!buf) {
+        return "";
+    }
+    
+    std::string ret((const char *)buf->data, buf->length);
+    codec_cleanup(p);
+    
+    return ret;
 }
+
+static std::string _base16decode(const std::string &data) {
+    CODEC p = codec_init(CODECBase16, CODECDecoding);
+    
+    CODECData cdata;
+    cdata.data = (byte *)data.data();
+    cdata.length = data.length();
+    
+    const CODECData *buf = codec_work(p, &cdata);
+    if (!buf) {
+        return "";
+    }
+    
+    std::string ret((const char *)buf->data, buf->length);
+    codec_cleanup(p);
+    
+    return ret;
+}
+
+TEST(base16_tests, encode_empty)
+{
+    std::string result = _base16encode("");
+    EXPECT_EQ(result, "");
+}
+
+TEST(base16_tests, encode_standard)
+{
+    std::string result = _base16encode("foobar");
+    EXPECT_EQ(result, "666F6F626172");
+}
+
+TEST(base16_tests, decode_standard)
+{
+    std::string result = _base16decode("666F6F626172");
+    EXPECT_EQ(result, "foobar");
+    
+    result = _base16decode("666F\r\n6F626172");
+    EXPECT_EQ(result, "foobar");
+}
+#endif
