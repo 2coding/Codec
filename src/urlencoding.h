@@ -26,16 +26,14 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef base32_h
-#define base32_h
-#include "baseN.h"
+#ifndef urlencoding_h
+#define urlencoding_h
+#include "codecbase.h"
 
-CODEC_STRUCT_DECLARE(base32)
-baseN bn;
-BOOL hex;
-BOOL ignorecase;
+CODEC_STRUCT_DECLARE(urlencoding)
+byte *safechr;
 CODEC_STRUCT_DECLARE_END;
 
-void *base32_init(CODECBase *p);
+void *urlencoding_init(CODECBase *p);
 
-#endif /* base32_h */
+#endif

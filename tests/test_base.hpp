@@ -25,17 +25,43 @@
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef test_base_hpp
+#define test_base_hpp
+#include "codec.h"
 
-#ifndef base32_h
-#define base32_h
-#include "baseN.h"
 
-CODEC_STRUCT_DECLARE(base32)
-baseN bn;
-BOOL hex;
-BOOL ignorecase;
-CODEC_STRUCT_DECLARE_END;
+static std::string _test_encoding(const std::string &data, CODECProtocol protocol, CODECMethod method, CODECOption opt, long v) {
+    CODEC p = codec_init(protocol, method);
+    codec_setup(p, opt, v);
+    CDCStream *st = stream_init_data((const byte *)data.data(), data.length());
+    const CDCStream *buf = codec_work(p, st);
+    if (stream_empty(buf)) {
+        return "";
+    }
+    
+    std::string ret((const char *)stream_data(buf), stream_size(buf));
+    stream_cleanup(st);
+    codec_cleanup(p);
+    
+    return ret;
+}
 
-void *base32_init(CODECBase *p);
+static std::string _test_decoding(const std::string &data, CODECProtocol protocol, CODECMethod method, CODECOption opt, long v, CODECode &code) {
+    CODEC p = codec_init(protocol, method);
+    codec_setup(p, opt, v);
+    
+    CDCStream *st = stream_init_data((const byte *)data.data(), data.length());
+    const CDCStream *buf = codec_work(p, st);
+    code = codec_lasterror(p);
+    if (stream_empty(buf)) {
+        return "";
+    }
+    
+    std::string ret((const char *)stream_data(buf), stream_size(buf));
+    stream_cleanup(st);
+    codec_cleanup(p);
+    
+    return ret;
+}
 
-#endif /* base32_h */
+#endif

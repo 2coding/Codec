@@ -30,13 +30,11 @@
 
 static const int _chunklen = 76;
 
-static size_t baseN_encoding_length(const baseN *p, size_t datalen);
-static void baseN_encoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
+static void baseN_encoding(const baseN *p, const byte *data, size_t datalen, CDCStream *buf);
 
-static size_t baseN_decoding_length(const baseN *p, size_t datalen);
-static BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
+static BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, CDCStream *buf);
 
-void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, size_t mask) {
+void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, byte maxchr, size_t mask) {
     cdcassert(p);
     cdcassert(entable);
     cdcassert(detable);
@@ -51,6 +49,7 @@ void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable
     p->padding = TRUE;
     p->entable = entable;
     p->detable = detable;
+    p->maxchr = maxchr;
     p->mask = mask;
 }
 
@@ -73,24 +72,24 @@ CODECode baseN_setup(baseN *bn, CODECOption opt, va_list args) {
     return code;
 }
 
-CODECode baseN_work(baseN *bn, CODECBase *p, const CODECData *data) {
+CODECode baseN_work(baseN *bn, CODECBase *p, const CDCStream *st) {
     if (p->method == CODECEncoding) {
-        size_t buflen = baseN_encoding_length(bn, data->length);
-        if (!buflen) {
-            return CODECEmptyInput;
-        }
-        
-        CODECDATA_REINIT(p, buflen);
-        baseN_encoding(bn, data->data, data->length, p->result->data, &p->result->length);
+//        size_t buflen = baseN_encoding_length(bn, data->length);
+//        if (!buflen) {
+//            return CODECEmptyInput;
+//        }
+//        
+//        CODECDATA_REINIT(p, buflen);
+        baseN_encoding(bn, stream_data(st), stream_size(st), p->result);
     }
     else {
-        size_t buflen = baseN_decoding_length(bn, data->length);
-        if (!buflen) {
-            return CODECEmptyInput;
-        }
-        
-        CODECDATA_REINIT(p, buflen);
-        if (!baseN_decoding(bn, data->data, data->length, p->result->data, &p->result->length)) {
+//        size_t buflen = baseN_decoding_length(bn, data->length);
+//        if (!buflen) {
+//            return CODECEmptyInput;
+//        }
+//        
+//        CODECDATA_REINIT(p, buflen);
+        if (!baseN_decoding(bn, stream_data(st), stream_size(st), p->result)) {
             return CODECInvalidInput;
         }
     }
@@ -99,42 +98,16 @@ CODECode baseN_work(baseN *bn, CODECBase *p, const CODECData *data) {
 }
 
 #pragma mark - encoding
-size_t baseN_encoding_length(const baseN *p, size_t datalen) {
-    if (!datalen) {
-        return 0;
-    }
-    
-    double times = (double)datalen / p->group;
-    times = ceil(times);
-    
-    size_t len = times * p->egroup;
-    if (p->chunkled) {
-        len += (len  - 1) / _chunklen * 2;
-    }
-    
-    return len;
-}
-
-static size_t _chunk(const baseN *p, byte *buf, size_t idx) {
-//    if (p->chunkled
-//        && idx > 0
-//        && ((idx % _chunklen == 0) || ((idx + p->egroup - 1) / _chunklen > idx / _chunklen ))) {
-//        buf[idx++] = '\r';
-//        buf[idx++] = '\n';
-//    }
+static void _chunk(const baseN *p, CDCStream *buf) {
+    size_t size = stream_size(buf);
     if (p->chunkled
-        && idx > 0
-        && idx % _chunklen == 0) {
-        buf[idx++] = '\r';
-        buf[idx++] = '\n';
+        && size > 0
+        && size % _chunklen == 0) {
+        stream_write_bytes(buf, (const byte *)"\r\n", 2);
     }
-    
-    return idx;
 }
 
-static size_t _encoding_group(const baseN *p, const byte *data, byte *buf, size_t idx, byte group) {
-//    idx = _chunk(p, buf, idx);
-    
+static void _encoding_group(const baseN *p, const byte *data, CDCStream *buf, byte group) {
     size_t i = 0;
     uint64_t t = 0;
     byte *tmp = (byte *)&t;
@@ -148,102 +121,78 @@ static size_t _encoding_group(const baseN *p, const byte *data, byte *buf, size_
     while (bits > 8) {
         bits -= p->bitslen;
         
-        idx = _chunk(p, buf, idx);
-        buf[idx++] = table[(t >> bits) & mask];
+        _chunk(p, buf);
+        stream_write_b(buf, table[(t >> bits) & mask]);
     }
-    
-    return idx;
 }
 
-static size_t _encoding_left(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t idx) {
+static void _encoding_left(const baseN *p, const byte *data, size_t datalen, CDCStream *buf) {
     size_t left = datalen % p->group;
     if (!left) {
-        return idx;
+        return ;
     }
     
-    idx = _chunk(p, buf, idx);
-    idx = _encoding_group(p, data + (datalen - left), buf, idx, left);
+    _chunk(p, buf);
+    _encoding_group(p, data + (datalen - left), buf, left);
     
     float t = left * 8.0f / p->bitslen;
     t = ceilf(t);
     int padding = p->egroup - t;
     while (p->padding && padding > 0) {
-        idx = _chunk(p, buf, idx);
-        buf[idx++] = '=';
+        _chunk(p, buf);
+        stream_write_b(buf, '=');
         --padding;
     }
-    
-    return idx;
 }
 
-void baseN_encoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen) {
+void baseN_encoding(const baseN *p, const byte *data, size_t datalen, CDCStream *buf) {
     cdcassert(p);
+    cdcassert(data && datalen);
     cdcassert(buf);
-    cdcassert(buflen);
-    if (!data || !datalen) {
-        *buflen = 0;
-        buf[0] = 0;
-        return;
-    }
     
-    size_t i = 0, idx = 0, n = datalen / p->group;
+    size_t i = 0, n = datalen / p->group;
     for (i = 0; i < n; ++i) {
-        idx = _encoding_group(p, data + i * p->group, buf, idx, p->group);
+        _encoding_group(p, data + i * p->group, buf, p->group);
     }
     
-    *buflen = _encoding_left(p, data, datalen, buf, idx);
+    _encoding_left(p, data, datalen, buf);
 }
 
 #pragma mark - decoding
-size_t baseN_decoding_length(const baseN *p, size_t datalen) {
-    if (!datalen) {
-        return 0;
-    }
-    
-    double len = (double)datalen / p->egroup;
-    len = ceil(len);
-    return len * p->group;
-}
-
-long _check_char(const baseN *p, byte c) {
+static long _check_char(const baseN *p, byte c) {
     if (c == '\r' || c == '\n' || c == '=') {
         return 0;
     }
     
-    if (p->detable[c] == 0xff) {
+    if (c > p->maxchr || p->detable[c] == 0xff) {
         return -1;
     }
     
     return 1;
 }
 
-size_t _decoding_group(const baseN *p, uint64_t tmp, size_t group, byte *buf, size_t idx) {
+static void _decoding_group(const baseN *p, uint64_t tmp, size_t group, CDCStream *buf) {
     size_t k = 0, bitlens = 8 * (p->group - 1);
     for (k = 0; k < group; ++k) {
-        buf[idx++] = (tmp >>  (bitlens -  8 * k)) & 0xff;
+        stream_write_b(buf, (tmp >>  (bitlens -  8 * k)) & 0xff);
     }
-    
-    return idx;
 }
 
-BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen) {
+BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, CDCStream *buf) {
     cdcassert(p);
-    cdcassert(buflen);
+    cdcassert(data && datalen);
     cdcassert(buf);
-    if (!data || !datalen) {
-        buf[0] = 0;
-        *buflen = 0;
-        return TRUE;
-    }
     
-    size_t i = 0, k = 0, idx = 0;
+    size_t i = 0, k = 0;
     uint64_t t = 0;
     long ret = 0;
     const byte *table = p->detable;
     uint64_t mask = p->mask;
     const byte bitlens = p->bitslen * (p->egroup - 1);
+    byte c = 0;
     for (i = 0; i < datalen; ++i) {
-        ret = _check_char(p, data[i]);
+        c = data[i];
+        ret = _check_char(p, c);
         if (ret == 0) {
             continue;
         }
@@ -251,19 +200,18 @@ BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf,
             return FALSE;
         }
         
-        t |= (table[data[i]] & mask) << (bitlens - p->bitslen * k);
+        t |= (table[c] & mask) << (bitlens - p->bitslen * k);
         ++k;
         if (k == p->egroup) {
-            idx = _decoding_group(p, t, p->group, buf, idx);
+            _decoding_group(p, t, p->group, buf);
             k = 0;
             t = 0;
         }
     }
     
     if (k > 0 && t != 0) {
-        idx = _decoding_group(p, t, k * p->bitslen / 8, buf, idx);
+        _decoding_group(p, t, k * p->bitslen / 8, buf);
     }
     
-    *buflen = idx;
     return TRUE;
 }

@@ -38,7 +38,7 @@ CODECBase * init(CODECMethod method, size_t size, initfunc fn) {
     memset(p, 0, size);
     
     p->method = method;
-    p->result = 0;
+    p->result = stream_init(0);
     p->code = CODECOk;
     
     p->init = fn;
@@ -55,20 +55,7 @@ void cleanup(CODECBase *p) {
         p->cleanup(p);
     }
     
-    CODECDATA_CLEANUP(p->result);
+    stream_cleanup(p->result);
     
     free(p);
-}
-
-CODECData *data_init(size_t len) {
-    cdcassert(len);
-    if (len == 0) {
-        return 0;
-    }
-    
-    CODECData *p = malloc(sizeof(CODECData));
-    p->length = len;
-    p->data = malloc(sizeof(byte) * len);
-    memset(p->data, 0, len * sizeof(byte));
-    return p;
 }

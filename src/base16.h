@@ -28,12 +28,11 @@
 
 #ifndef base16_h
 #define base16_h
-
-#include "cdcdefs.h"
 #include "codecbase.h"
 
 CODEC_STRUCT_DECLARE(base16)
 BOOL chunkled;
+BOOL ignorecase;
 CODEC_STRUCT_DECLARE_END;
 
 void *base16_init(CODECBase *p);

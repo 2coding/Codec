@@ -25,17 +25,36 @@
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef urlencoding_tests_hpp
+#define urlencoding_tests_hpp
+#include <gtest/gtest.h>
+#include "test_base.hpp"
 
-#ifndef base32_h
-#define base32_h
-#include "baseN.h"
+static std::string _urlencode(const std::string &data) {
+    return _test_encoding(data, CODECURL, CODECEncoding, CODECStandard, 1L);
+}
 
-CODEC_STRUCT_DECLARE(base32)
-baseN bn;
-BOOL hex;
-BOOL ignorecase;
-CODEC_STRUCT_DECLARE_END;
+static std::string _urldecode(const std::string &data) {
+    CODECode code;
+    return _test_decoding(data, CODECURL, CODECDecoding, CODECStandard, 1L, code);
+}
 
-void *base32_init(CODECBase *p);
+TEST(urlcodec_tests, encode_empty)
+{
+    std::string result = _urlencode("");
+    EXPECT_EQ(result, "");
+}
 
-#endif /* base32_h */
+TEST(urlcodec_tests, encode_standard)
+{
+    std::string result = _urlencode("你好世界+hello world");
+    EXPECT_EQ(result, "%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C%2Bhello+world");
+}
+
+
+TEST(urlcodec_tests, decode_standard)
+{
+    std::string result = _urldecode("%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C%2Bhello+world");
+    EXPECT_EQ(result, "你好世界+hello world");
+}
+#endif

@@ -26,16 +26,24 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef base32_h
-#define base32_h
-#include "baseN.h"
+#ifndef cdcstream_h
+#define cdcstream_h
+#include "cdcdefs.h"
 
-CODEC_STRUCT_DECLARE(base32)
-baseN bn;
-BOOL hex;
-BOOL ignorecase;
-CODEC_STRUCT_DECLARE_END;
+typedef struct CDCStream CDCStream;
 
-void *base32_init(CODECBase *p);
+CDCStream *stream_init(size_t len);
+CDCStream *stream_init_data(const byte *data, size_t len);
+void stream_cleanup(CDCStream *st);
 
-#endif /* base32_h */
+void stream_clear(CDCStream *st);
+
+size_t stream_size(const CDCStream *st);
+const byte *stream_data(const CDCStream *st);
+BOOL stream_empty(const CDCStream *st);
+
+size_t stream_write_b(CDCStream *st, byte b);
+size_t stream_write_bytes(CDCStream *st, const byte *data, size_t dataLen);
+
+size_t stream_read(CDCStream *st, byte *buf, size_t *readLen);
+#endif

@@ -47,7 +47,9 @@ typedef uint8_t byte;
 typedef enum {
     CODECBase64,
     CODECBase32,
-    CODECBase16
+    CODECBase16,
+    
+    CODECURL
 }CODECProtocol;
 
 typedef enum {
@@ -67,6 +69,8 @@ typedef enum {
 }CODECode;
 
 typedef enum {
+    CODECStandard,
+    
     CODECBaseNChunkled,
     CODECBaseNPadding,
     
@@ -74,14 +78,9 @@ typedef enum {
     CODECBase64UrlSafe,
     
     CODECBase32Hex,
+    CODECBase32IgnoreCase,
     
+    CODECBase16IgnoreCase
 }CODECOption;
-
-typedef struct {
-    byte *data;
-    size_t length;
-}CODECData;
-
-#define CODECDATA_CLEANUP(pd) {if(pd) {free(pd->data); free(pd);}}
 
 #endif /* cdcdefs_h */
