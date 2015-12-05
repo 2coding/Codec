@@ -41,10 +41,11 @@ typedef struct baseN{
     
     char *entable;
     byte *detable;
+    byte maxchr;
     size_t mask;
 }baseN;
 
-void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, size_t mask);
+void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, byte maxchr, size_t mask);
 CODECode baseN_setup(baseN *bn, CODECOption opt, va_list args);
 CODECode baseN_work(baseN *bn, CODECBase *p, const CODECData *data);
 

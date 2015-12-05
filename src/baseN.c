@@ -36,7 +36,7 @@ static void baseN_encoding(const baseN *p, const byte *data, size_t datalen, byt
 static size_t baseN_decoding_length(const baseN *p, size_t datalen);
 static BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf, size_t *buflen);
 
-void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, size_t mask) {
+void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, byte maxchr, size_t mask) {
     cdcassert(p);
     cdcassert(entable);
     cdcassert(detable);
@@ -51,6 +51,7 @@ void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable
     p->padding = TRUE;
     p->entable = entable;
     p->detable = detable;
+    p->maxchr = maxchr;
     p->mask = mask;
 }
 
@@ -116,12 +117,6 @@ size_t baseN_encoding_length(const baseN *p, size_t datalen) {
 }
 
 static size_t _chunk(const baseN *p, byte *buf, size_t idx) {
-//    if (p->chunkled
-//        && idx > 0
-//        && ((idx % _chunklen == 0) || ((idx + p->egroup - 1) / _chunklen > idx / _chunklen ))) {
-//        buf[idx++] = '\r';
-//        buf[idx++] = '\n';
-//    }
     if (p->chunkled
         && idx > 0
         && idx % _chunklen == 0) {
@@ -133,8 +128,6 @@ static size_t _chunk(const baseN *p, byte *buf, size_t idx) {
 }
 
 static size_t _encoding_group(const baseN *p, const byte *data, byte *buf, size_t idx, byte group) {
-//    idx = _chunk(p, buf, idx);
-    
     size_t i = 0;
     uint64_t t = 0;
     byte *tmp = (byte *)&t;
@@ -210,7 +203,7 @@ long _check_char(const baseN *p, byte c) {
         return 0;
     }
     
-    if (p->detable[c] == 0xff) {
+    if (c > p->maxchr || p->detable[c] == 0xff) {
         return -1;
     }
     
@@ -242,8 +235,10 @@ BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf,
     const byte *table = p->detable;
     uint64_t mask = p->mask;
     const byte bitlens = p->bitslen * (p->egroup - 1);
+    byte c = 0;
     for (i = 0; i < datalen; ++i) {
-        ret = _check_char(p, data[i]);
+        c = data[i];
+        ret = _check_char(p, c);
         if (ret == 0) {
             continue;
         }
@@ -251,7 +246,7 @@ BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, byte *buf,
             return FALSE;
         }
         
-        t |= (table[data[i]] & mask) << (bitlens - p->bitslen * k);
+        t |= (table[c] & mask) << (bitlens - p->bitslen * k);
         ++k;
         if (k == p->egroup) {
             idx = _decoding_group(p, t, p->group, buf, idx);
