@@ -30,43 +30,14 @@
 #define base32_tests_hpp
 
 #include <gtest/gtest.h>
-#include "codec.h"
+#include "test_base.hpp"
 
 static std::string _base32encode(const std::string &data, CODECOption opt, long v) {
-    CODEC p = codec_init(CODECBase32, CODECEncoding);
-    codec_setup(p, opt, v);
-    CODECData cdata;
-    cdata.data = (byte *)data.data();
-    cdata.length = data.length();
-    const CODECData *buf = codec_work(p, &cdata);
-    if (!buf) {
-        return "";
-    }
-    
-    std::string ret((const char *)buf->data, buf->length);
-    codec_cleanup(p);
-    
-    return ret;
+    return _test_encoding(data, CODECBase32, CODECEncoding, opt, v);
 }
 
 static std::string _base32decodehex(const std::string &data, CODECode &code, long v) {
-    CODEC p = codec_init(CODECBase32, CODECDecoding);
-    codec_setup(p, CODECBase32Hex, v);
-    
-    CODECData cdata;
-    cdata.data = (byte *)data.data();
-    cdata.length = data.length();
-    
-    const CODECData *buf = codec_work(p, &cdata);
-    code = codec_lasterror(p);
-    if (!buf) {
-        return "";
-    }
-    
-    std::string ret((const char *)buf->data, buf->length);
-    codec_cleanup(p);
-    
-    return ret;
+    return _test_decoding(data, CODECBase32, CODECDecoding, CODECBase32Hex, v, code);
 }
 
 static std::string _base32decode(const std::string &data, CODECode &code) {

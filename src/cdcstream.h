@@ -26,59 +26,24 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef cdcdefs_h
-#define cdcdefs_h
+#ifndef cdcstream_h
+#define cdcstream_h
+#include "cdcdefs.h"
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
+typedef struct CDCStream CDCStream;
 
-typedef long int BOOL;
-#define TRUE 1
-#define FALSE 0
+CDCStream *stream_init(size_t len);
+CDCStream *stream_init_data(const byte *data, size_t len);
+void stream_cleanup(CDCStream *st);
 
-typedef uint8_t byte;
+void stream_clear(CDCStream *st);
 
-#define cdcassert assert
+size_t stream_size(const CDCStream *st);
+const byte *stream_data(const CDCStream *st);
+BOOL stream_empty(const CDCStream *st);
 
-typedef enum {
-    CODECBase64,
-    CODECBase32,
-    CODECBase16,
-    
-    CODECURL
-}CODECProtocol;
+size_t stream_write_b(CDCStream *st, byte b);
+size_t stream_write_bytes(CDCStream *st, const byte *data, size_t dataLen);
 
-typedef enum {
-    CODECEncoding,
-    CODECDecoding,
-}CODECMethod;
-
-typedef enum {
-    CODECOk,
-    
-    CODECIgnoredOption,
-    
-    CODECEmptyInput,
-    CODECInvalidInput,
-    
-    CODECNullPtr
-}CODECode;
-
-typedef enum {
-    CODECStandard,
-    
-    CODECBaseNChunkled,
-    CODECBaseNPadding,
-    
-    CODECBase64SafeChar,
-    CODECBase64UrlSafe,
-    
-    CODECBase32Hex,
-    
-}CODECOption;
-
-#endif /* cdcdefs_h */
+size_t stream_read(CDCStream *st, byte *buf, size_t *readLen);
+#endif

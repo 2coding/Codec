@@ -28,8 +28,6 @@
 
 #ifndef base16_h
 #define base16_h
-
-#include "cdcdefs.h"
 #include "codecbase.h"
 
 CODEC_STRUCT_DECLARE(base16)

@@ -61,7 +61,7 @@ static const byte _hex_decoding_table[] = {
 };
 
 
-static CODECode _base32_work(CODECBase *p, const CODECData *data);
+static CODECode _base32_work(CODECBase *p, const CDCStream *st);
 static CODECode _base32_setopt(CODECBase *p, CODECOption opt, va_list args);
 
 void *base32_init(CODECBase *p) {
@@ -92,7 +92,7 @@ CODECode _base32_setopt(CODECBase *p, CODECOption opt, va_list args) {
     return code;
 }
 
-CODECode _base32_work(CODECBase *p, const CODECData *data) {
+CODECode _base32_work(CODECBase *p, const CDCStream *st) {
     struct base32 *b32 = (struct base32 *)p;
-    return baseN_work(&b32->bn, p, data);
+    return baseN_work(&b32->bn, p, st);
 }

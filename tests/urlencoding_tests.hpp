@@ -25,60 +25,36 @@
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef urlencoding_tests_hpp
+#define urlencoding_tests_hpp
+#include <gtest/gtest.h>
+#include "test_base.hpp"
 
-#ifndef cdcdefs_h
-#define cdcdefs_h
+static std::string _urlencode(const std::string &data) {
+    return _test_encoding(data, CODECURL, CODECEncoding, CODECStandard, 1L);
+}
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
+static std::string _urldecode(const std::string &data) {
+    CODECode code;
+    return _test_decoding(data, CODECURL, CODECDecoding, CODECStandard, 1L, code);
+}
 
-typedef long int BOOL;
-#define TRUE 1
-#define FALSE 0
+TEST(urlcodec_tests, encode_empty)
+{
+    std::string result = _urlencode("");
+    EXPECT_EQ(result, "");
+}
 
-typedef uint8_t byte;
+TEST(urlcodec_tests, encode_standard)
+{
+    std::string result = _urlencode("你好世界+hello world");
+    EXPECT_EQ(result, "%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C%2Bhello+world");
+}
 
-#define cdcassert assert
 
-typedef enum {
-    CODECBase64,
-    CODECBase32,
-    CODECBase16,
-    
-    CODECURL
-}CODECProtocol;
-
-typedef enum {
-    CODECEncoding,
-    CODECDecoding,
-}CODECMethod;
-
-typedef enum {
-    CODECOk,
-    
-    CODECIgnoredOption,
-    
-    CODECEmptyInput,
-    CODECInvalidInput,
-    
-    CODECNullPtr
-}CODECode;
-
-typedef enum {
-    CODECStandard,
-    
-    CODECBaseNChunkled,
-    CODECBaseNPadding,
-    
-    CODECBase64SafeChar,
-    CODECBase64UrlSafe,
-    
-    CODECBase32Hex,
-    
-}CODECOption;
-
-#endif /* cdcdefs_h */
+TEST(urlcodec_tests, decode_standard)
+{
+    std::string result = _urldecode("%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C%2Bhello+world");
+    EXPECT_EQ(result, "你好世界+hello world");
+}
+#endif

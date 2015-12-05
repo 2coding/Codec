@@ -15,6 +15,8 @@
 		C374AB5D1C0141E7009BE616 /* base32.c in Sources */ = {isa = PBXBuildFile; fileRef = C374AB5B1C0141E7009BE616 /* base32.c */; };
 		C374AB601C01442F009BE616 /* baseN.c in Sources */ = {isa = PBXBuildFile; fileRef = C374AB5E1C01442F009BE616 /* baseN.c */; };
 		C3F284DB1C11888500B2F4D2 /* base16.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F284D91C11888500B2F4D2 /* base16.c */; };
+		C3F284DF1C127E2C00B2F4D2 /* urlencoding.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F284DD1C127E2C00B2F4D2 /* urlencoding.c */; };
+		C3F284E61C12940600B2F4D2 /* cdcstream.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F284E41C12940600B2F4D2 /* cdcstream.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,6 +51,12 @@
 		C3F284D91C11888500B2F4D2 /* base16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base16.c; sourceTree = "<group>"; };
 		C3F284DA1C11888500B2F4D2 /* base16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base16.h; sourceTree = "<group>"; };
 		C3F284DC1C118D5700B2F4D2 /* base16_tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = base16_tests.hpp; sourceTree = "<group>"; };
+		C3F284DD1C127E2C00B2F4D2 /* urlencoding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = urlencoding.c; sourceTree = "<group>"; };
+		C3F284DE1C127E2C00B2F4D2 /* urlencoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = urlencoding.h; sourceTree = "<group>"; };
+		C3F284E01C127E3400B2F4D2 /* urlencoding_tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = urlencoding_tests.hpp; sourceTree = "<group>"; };
+		C3F284E41C12940600B2F4D2 /* cdcstream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdcstream.c; sourceTree = "<group>"; };
+		C3F284E51C12940600B2F4D2 /* cdcstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cdcstream.h; sourceTree = "<group>"; };
+		C3F284E71C12957200B2F4D2 /* test_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = test_base.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +101,10 @@
 		C302BEE11BFABB1F006EFCA7 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C3F284E41C12940600B2F4D2 /* cdcstream.c */,
+				C3F284E51C12940600B2F4D2 /* cdcstream.h */,
+				C3F284DD1C127E2C00B2F4D2 /* urlencoding.c */,
+				C3F284DE1C127E2C00B2F4D2 /* urlencoding.h */,
 				C3F284D91C11888500B2F4D2 /* base16.c */,
 				C3F284DA1C11888500B2F4D2 /* base16.h */,
 				C302BEE21BFABB1F006EFCA7 /* base64.c */,
@@ -114,6 +126,8 @@
 		C302BEEA1BFAC0EC006EFCA7 /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				C3F284E71C12957200B2F4D2 /* test_base.hpp */,
+				C3F284E01C127E3400B2F4D2 /* urlencoding_tests.hpp */,
 				C3F284DC1C118D5700B2F4D2 /* base16_tests.hpp */,
 				C3F284D81C116D1500B2F4D2 /* base32_tests.hpp */,
 				C302BEEC1BFAC6BA006EFCA7 /* base64_tests.hpp */,
@@ -178,9 +192,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3F284DF1C127E2C00B2F4D2 /* urlencoding.c in Sources */,
 				C30EB6871BFC6D9C007C766D /* codec.c in Sources */,
 				C374AB5D1C0141E7009BE616 /* base32.c in Sources */,
 				C30EB68A1BFEF37C007C766D /* codecbase.c in Sources */,
+				C3F284E61C12940600B2F4D2 /* cdcstream.c in Sources */,
 				C374AB601C01442F009BE616 /* baseN.c in Sources */,
 				C3F284DB1C11888500B2F4D2 /* base16.c in Sources */,
 				C302BEE61BFABB1F006EFCA7 /* base64.c in Sources */,

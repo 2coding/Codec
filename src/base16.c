@@ -27,9 +27,9 @@
  */
 #include "base16.h"
 
-static CODECode _base16_work(CODECBase *p, const CODECData *data);
-static void _base16_encoding(const struct base16 *b16, const byte *data, size_t datalen, byte *buf, size_t *buflen);
-static BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen, byte *buf, size_t *buflen);
+static CODECode _base16_work(CODECBase *p, const CDCStream *st);
+static void _base16_encoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf);
+static BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf);
 
 void *base16_init(CODECBase *p) {
     struct base16 *b16 = (struct base16 *)p;
@@ -38,17 +38,12 @@ void *base16_init(CODECBase *p) {
     return p;
 }
 
-CODECode _base16_work(CODECBase *p, const CODECData *data) {
-    cdcassert(data && data->data && data->length);
+CODECode _base16_work(CODECBase *p, const CDCStream *st) {
     if (p->method == CODECEncoding) {
-        size_t buflen = data->length * 2;
-        CODECDATA_REINIT(p, buflen);
-        _base16_encoding((const struct base16 *)p, data->data, data->length, p->result->data, &p->result->length);
+        _base16_encoding((const struct base16 *)p, stream_data(st), stream_size(st), p->result);
     }
     else {
-        size_t buflen = data->length / 2;
-        CODECDATA_REINIT(p, buflen);
-        if (!_base16_decoding((const struct base16 *)p, data->data, data->length, p->result->data, &p->result->length)) {
+        if (!_base16_decoding((const struct base16 *)p, stream_data(st), stream_size(st), p->result)) {
             return CODECInvalidInput;
         }
     }
@@ -56,27 +51,26 @@ CODECode _base16_work(CODECBase *p, const CODECData *data) {
     return CODECOk;
 }
 
-void _base16_encoding(const struct base16 *b16, const byte *data, size_t datalen, byte *buf, size_t *buflen) {
+void _base16_encoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf) {
     static const byte table[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     static const int chunklen = 76;
     
     size_t i = 0, idx = 0;
+    byte arr[2] = {0};
     for (i = 0; i < datalen; ++i) {
         if (b16->chunkled
             && idx > 0
             && idx % chunklen == 0) {
-            buf[idx++] = '\r';
-            buf[idx++] = '\n';
+            idx = stream_write_bytes(buf, (const byte *)"\r\n", 2);
         }
         
-        buf[idx++] = table[(data[i] >> 4) & 0x0f];
-        buf[idx++] = table[data[i] & 0x0f];
+        arr[0] = table[(data[i] >> 4) & 0x0f];
+        arr[1] = table[data[i] & 0x0f];
+        idx = stream_write_bytes(buf, arr, 2);
     }
-    
-    *buflen = idx;
 }
 
-BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen, byte *buf, size_t *buflen) {
+BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf) {
     if (datalen % 2 != 0) {
         return FALSE;
     }
@@ -89,7 +83,7 @@ BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen
         0xff, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,                                                       // 40-46 A-F
         
     };
-    size_t i = 0, idx = 0, k = 0;
+    size_t i = 0, k = 0;
     byte c = 0, t = 0;
     for (i = 0; i < datalen; ++i) {
         c = data[i];
@@ -109,7 +103,7 @@ BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen
         t |= (c << (4 - 4 * k)) & 0xff;
         ++k;
         if (k == 2) {
-            buf[idx++] = t;
+            stream_write_b(buf, t);
             k = 0;
             t = 0;
         }
@@ -119,6 +113,5 @@ BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen
         return FALSE;
     }
     
-    *buflen = idx;
     return TRUE;
 }

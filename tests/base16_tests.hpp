@@ -29,40 +29,15 @@
 #ifndef base16_tests_hpp
 #define base16_tests_hpp
 #include <gtest/gtest.h>
-#include "codec.h"
+#include "test_base.hpp"
 
 static std::string _base16encode(const std::string &data) {
-    CODEC p = codec_init(CODECBase16, CODECEncoding);
-    CODECData cdata;
-    cdata.data = (byte *)data.data();
-    cdata.length = data.length();
-    const CODECData *buf = codec_work(p, &cdata);
-    if (!buf) {
-        return "";
-    }
-    
-    std::string ret((const char *)buf->data, buf->length);
-    codec_cleanup(p);
-    
-    return ret;
+    return _test_encoding(data, CODECBase16, CODECEncoding, CODECStandard, 1L);
 }
 
 static std::string _base16decode(const std::string &data) {
-    CODEC p = codec_init(CODECBase16, CODECDecoding);
-    
-    CODECData cdata;
-    cdata.data = (byte *)data.data();
-    cdata.length = data.length();
-    
-    const CODECData *buf = codec_work(p, &cdata);
-    if (!buf) {
-        return "";
-    }
-    
-    std::string ret((const char *)buf->data, buf->length);
-    codec_cleanup(p);
-    
-    return ret;
+    CODECode code;
+    return _test_decoding(data, CODECBase16, CODECDecoding, CODECStandard, 1L, code);
 }
 
 TEST(base16_tests, encode_empty)

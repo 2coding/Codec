@@ -57,7 +57,7 @@ static const byte _decode_table[] = {
 };
 
 static CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args);
-static CODECode _base64_work(CODECBase *p, const CODECData *data);
+static CODECode _base64_work(CODECBase *p, const CDCStream *st);
 
 #pragma mark - init
 void *base64_init(CODECBase *p) {
@@ -94,7 +94,7 @@ CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
     return code;
 }
 
-CODECode _base64_work(CODECBase *p, const CODECData *data) {
+CODECode _base64_work(CODECBase *p, const CDCStream *st) {
     struct base64 *ptr = (struct base64 *)p;
-    return baseN_work(&ptr->bn, p, data);
+    return baseN_work(&ptr->bn, p, st);
 }

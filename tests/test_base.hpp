@@ -25,60 +25,43 @@
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef test_base_hpp
+#define test_base_hpp
+#include "codec.h"
 
-#ifndef cdcdefs_h
-#define cdcdefs_h
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
-
-typedef long int BOOL;
-#define TRUE 1
-#define FALSE 0
-
-typedef uint8_t byte;
-
-#define cdcassert assert
-
-typedef enum {
-    CODECBase64,
-    CODECBase32,
-    CODECBase16,
+static std::string _test_encoding(const std::string &data, CODECProtocol protocol, CODECMethod method, CODECOption opt, long v) {
+    CODEC p = codec_init(protocol, method);
+    codec_setup(p, opt, v);
+    CDCStream *st = stream_init_data((const byte *)data.data(), data.length());
+    const CDCStream *buf = codec_work(p, st);
+    if (stream_empty(buf)) {
+        return "";
+    }
     
-    CODECURL
-}CODECProtocol;
+    std::string ret((const char *)stream_data(buf), stream_size(buf));
+    stream_cleanup(st);
+    codec_cleanup(p);
+    
+    return ret;
+}
 
-typedef enum {
-    CODECEncoding,
-    CODECDecoding,
-}CODECMethod;
+static std::string _test_decoding(const std::string &data, CODECProtocol protocol, CODECMethod method, CODECOption opt, long v, CODECode &code) {
+    CODEC p = codec_init(protocol, method);
+    codec_setup(p, opt, v);
+    
+    CDCStream *st = stream_init_data((const byte *)data.data(), data.length());
+    const CDCStream *buf = codec_work(p, st);
+    code = codec_lasterror(p);
+    if (stream_empty(buf)) {
+        return "";
+    }
+    
+    std::string ret((const char *)stream_data(buf), stream_size(buf));
+    stream_cleanup(st);
+    codec_cleanup(p);
+    
+    return ret;
+}
 
-typedef enum {
-    CODECOk,
-    
-    CODECIgnoredOption,
-    
-    CODECEmptyInput,
-    CODECInvalidInput,
-    
-    CODECNullPtr
-}CODECode;
-
-typedef enum {
-    CODECStandard,
-    
-    CODECBaseNChunkled,
-    CODECBaseNPadding,
-    
-    CODECBase64SafeChar,
-    CODECBase64UrlSafe,
-    
-    CODECBase32Hex,
-    
-}CODECOption;
-
-#endif /* cdcdefs_h */
+#endif

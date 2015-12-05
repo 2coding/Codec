@@ -26,59 +26,14 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef cdcdefs_h
-#define cdcdefs_h
+#ifndef urlencoding_h
+#define urlencoding_h
+#include "codecbase.h"
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
+CODEC_STRUCT_DECLARE(urlencoding)
+byte *safechr;
+CODEC_STRUCT_DECLARE_END;
 
-typedef long int BOOL;
-#define TRUE 1
-#define FALSE 0
+void *urlencoding_init(CODECBase *p);
 
-typedef uint8_t byte;
-
-#define cdcassert assert
-
-typedef enum {
-    CODECBase64,
-    CODECBase32,
-    CODECBase16,
-    
-    CODECURL
-}CODECProtocol;
-
-typedef enum {
-    CODECEncoding,
-    CODECDecoding,
-}CODECMethod;
-
-typedef enum {
-    CODECOk,
-    
-    CODECIgnoredOption,
-    
-    CODECEmptyInput,
-    CODECInvalidInput,
-    
-    CODECNullPtr
-}CODECode;
-
-typedef enum {
-    CODECStandard,
-    
-    CODECBaseNChunkled,
-    CODECBaseNPadding,
-    
-    CODECBase64SafeChar,
-    CODECBase64UrlSafe,
-    
-    CODECBase32Hex,
-    
-}CODECOption;
-
-#endif /* cdcdefs_h */
+#endif

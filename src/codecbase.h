@@ -29,18 +29,19 @@
 #ifndef codecbase_h
 #define codecbase_h
 #include "cdcdefs.h"
+#include "cdcstream.h"
 
 typedef struct CODECBase CODECBase;
 
 typedef void *(*initfunc) (CODECBase *);
 typedef void (*cleanupfunc) (CODECBase *);
 typedef CODECode (*setupfunc) (CODECBase *, CODECOption, va_list);
-typedef CODECode (*workfunc) (CODECBase *, const CODECData *data);
+typedef CODECode (*workfunc) (CODECBase *, const CDCStream *st);
 typedef void (*resetfunc) (CODECBase *);
 
 #define CODECBASE_MEMEBER \
     CODECMethod method;\
-    CODECData *result;\
+    CDCStream *result;\
     CODECode code;\
     initfunc init;\
     cleanupfunc cleanup;\
@@ -59,13 +60,5 @@ CODEC_STRUCT_DECLARE_END;
 
 CODECBase * init(CODECMethod method, size_t size, initfunc fn);
 void cleanup(CODECBase *p);
-
-CODECData *data_init(size_t len);
-#define CODECDATA_REINIT(p, len) {\
-    if (p){\
-        CODECDATA_CLEANUP(p->result); \
-        p->result = data_init(len);\
-    }\
-}
 
 #endif /* codecbase_h */

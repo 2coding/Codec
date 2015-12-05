@@ -34,6 +34,7 @@ extern "C" {
 #endif
     
 #include "cdcdefs.h"
+#include "cdcstream.h"
     
     typedef void *CODEC;
 
@@ -41,7 +42,7 @@ extern "C" {
     void codec_cleanup(CODEC codec);
     
     CODECode codec_setup(CODEC codec, CODECOption opt, ...);
-    const CODECData * codec_work(CODEC codec, const CODECData *data);
+    const CDCStream * codec_work(CODEC codec, const CDCStream *st);
     
     void codec_reset(CODEC codec);
     CODECode codec_lasterror(CODEC codec);

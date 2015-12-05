@@ -30,42 +30,14 @@
 #define base64_tests_hpp
 
 #include <gtest/gtest.h>
-#include "codec.h"
+#include "test_base.hpp"
 
 static std::string _base64encode(const std::string &data, CODECOption opt, long v) {
-    CODEC p = codec_init(CODECBase64, CODECEncoding);
-    codec_setup(p, opt, v);
-    CODECData cdata;
-    cdata.data = (byte *)data.data();
-    cdata.length = data.length();
-    const CODECData *buf = codec_work(p, &cdata);
-    if (!buf) {
-        return "";
-    }
-    
-    std::string ret((const char *)buf->data, buf->length);
-    codec_cleanup(p);
-    
-    return ret;
+    return _test_encoding(data, CODECBase64, CODECEncoding, opt, v);
 }
 
 static std::string _base64decode(const std::string &data, CODECode &code) {
-    CODEC p = codec_init(CODECBase64, CODECDecoding);
-    
-    CODECData cdata;
-    cdata.data = (byte *)data.data();
-    cdata.length = data.length();
-    
-    const CODECData *buf = codec_work(p, &cdata);
-    code = codec_lasterror(p);
-    if (!buf) {
-        return "";
-    }
-    
-    std::string ret((const char *)buf->data, buf->length);
-    codec_cleanup(p);
-    
-    return ret;
+    return _test_decoding(data, CODECBase64, CODECDecoding, CODECStandard, 1L, code);
 }
 
 TEST(base64_tests, encode_option)

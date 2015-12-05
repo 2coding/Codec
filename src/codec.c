@@ -31,6 +31,7 @@
 #include "base64.h"
 #include "base32.h"
 #include "base16.h"
+#include "urlencoding.h"
 
 CODEC codec_init(CODECProtocol protocol, CODECMethod method) {
     CODECBase *p = 0;
@@ -46,6 +47,9 @@ CODEC codec_init(CODECProtocol protocol, CODECMethod method) {
         case CODECBase16:
             p = init(method, sizeof(struct base16), base16_init);
             break;
+            
+        case CODECURL:
+            p = init(method, sizeof(struct urlencoding), urlencoding_init);
             
         default:
             break;
@@ -81,19 +85,20 @@ CODECode codec_setup(CODEC codec, CODECOption opt, ...) {
     return p->code;
 }
 
-const CODECData * codec_work(CODEC codec, const CODECData *data) {
+const CDCStream * codec_work(CODEC codec, const CDCStream *st) {
     if (!codec) {
         return 0;
     }
     
     CODECBase *p = codec;
-    if (!data || !data->data || !data->length) {
+    if (stream_empty(st)) {
         p->code = CODECEmptyInput;
         return 0;
     }
     
     if (p->work) {
-        p->code = p->work(p, data);
+        stream_clear(p->result);
+        p->code = p->work(p, st);
     }
     
     return p->code == CODECOk ? p->result : 0;
