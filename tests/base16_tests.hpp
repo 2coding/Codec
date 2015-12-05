@@ -40,6 +40,11 @@ static std::string _base16decode(const std::string &data) {
     return _test_decoding(data, CODECBase16, CODECDecoding, CODECStandard, 1L, code);
 }
 
+static std::string _base16decode_ignorecase(const std::string &data) {
+    CODECode code;
+    return _test_decoding(data, CODECBase16, CODECDecoding, CODECBase16IgnoreCase, 1L, code);
+}
+
 TEST(base16_tests, encode_empty)
 {
     std::string result = _base16encode("");
@@ -58,6 +63,12 @@ TEST(base16_tests, decode_standard)
     EXPECT_EQ(result, "foobar");
     
     result = _base16decode("666F\r\n6F626172");
+    EXPECT_EQ(result, "foobar");
+}
+
+TEST(base16_tests, decode_ignorecase)
+{
+    std::string result = _base16decode_ignorecase("666f6F626172");
     EXPECT_EQ(result, "foobar");
 }
 #endif

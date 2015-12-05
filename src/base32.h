@@ -32,6 +32,8 @@
 
 CODEC_STRUCT_DECLARE(base32)
 baseN bn;
+BOOL hex;
+BOOL ignorecase;
 CODEC_STRUCT_DECLARE_END;
 
 void *base32_init(CODECBase *p);

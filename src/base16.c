@@ -27,15 +27,35 @@
  */
 #include "base16.h"
 
+static CODECode _base16_setopt(CODECBase *p, CODECOption opt, va_list args);
 static CODECode _base16_work(CODECBase *p, const CDCStream *st);
+
 static void _base16_encoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf);
 static BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf);
 
 void *base16_init(CODECBase *p) {
     struct base16 *b16 = (struct base16 *)p;
     b16->chunkled = TRUE;
+    b16->ignorecase = FALSE;
+    
+    b16->setup = _base16_setopt;
     b16->work = _base16_work;
     return p;
+}
+
+CODECode _base16_setopt(CODECBase *p, CODECOption opt, va_list args) {
+    CODECode code = CODECOk;
+    struct base16 *b16 = (struct base16 *)p;
+    switch (opt) {
+        case CODECBase16IgnoreCase:
+            b16->ignorecase = va_arg(args, long);
+            break;
+            
+        default:
+            code = CODECIgnoredOption;
+            break;
+    }
+    return code;
 }
 
 CODECode _base16_work(CODECBase *p, const CDCStream *st) {
@@ -89,6 +109,10 @@ BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen
         c = data[i];
         if (c == '\r' || c == '\n') {
             continue;
+        }
+        
+        if (b16->ignorecase && c >= 'a' && c <= 'z') {
+            c = c - 'a' + 'A';
         }
         
         if (c > 'F') {

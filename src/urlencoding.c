@@ -157,12 +157,17 @@ BOOL _url_decoding(const byte *safechr, CDCStream *buf, const byte *data, size_t
             }
             
             stream_write_b(buf, escape[0]);
+            i += 3;
+        }
+        else if (c == '+') {
+            stream_write_b(buf, ' ');
+            ++i;
         }
         else if (safechr[c] == 0xff) {
             return FALSE;
         }
         else {
-            stream_write_b(buf, c == '+' ? ' ' : c);
+            stream_write_b(buf, c);
             ++i;
         }
     }

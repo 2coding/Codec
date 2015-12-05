@@ -78,7 +78,9 @@ typedef enum {
     CODECBase64UrlSafe,
     
     CODECBase32Hex,
+    CODECBase32IgnoreCase,
     
+    CODECBase16IgnoreCase
 }CODECOption;
 
 #endif /* cdcdefs_h */

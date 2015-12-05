@@ -40,6 +40,10 @@ static std::string _base32decodehex(const std::string &data, CODECode &code, lon
     return _test_decoding(data, CODECBase32, CODECDecoding, CODECBase32Hex, v, code);
 }
 
+static std::string _base32decode_ignorecase(const std::string &data, CODECode &code) {
+    return _test_decoding(data, CODECBase32, CODECDecoding, CODECBase32IgnoreCase, 1L, code);
+}
+
 static std::string _base32decode(const std::string &data, CODECode &code) {
     return _base32decodehex(data, code, 0);
 }
@@ -101,6 +105,13 @@ TEST(base32_tests, decode_hex)
     
     result = _base32decodehex("C5H66P35CPJMGQBADDM6QRJFE1ON4SRKELR7EU3PF8MLUC1H68PJ8D9M6SS3IBP17T0K4GQ48L34EI29995KOJAE9T852KIJAHALCLQOB5D0====", code, 1L);
     EXPECT_EQ(result, "abcdefghijklmnopqrstuvwxyz-_0123456789/!?ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+}
+
+TEST(base32_tests, decode_ignorecase)
+{
+    CODECode code;
+    std::string result = _base32decode_ignorecase("NbswY3dPeB3W64tMmQ======", code);
+    EXPECT_EQ(result, "hello world");
 }
 
 #endif
