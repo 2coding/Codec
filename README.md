@@ -12,7 +12,7 @@ General encoding/decoding algorithms (for example base64, URL)
 	Xcode 7.1.1+
     
 ### Example:
-    CODEC p = codec_init(CODECBase64);
+    CODEC p = codec_init();
     codec_setup(p, CODECSpecialProtocol, CODECBase64);
     const CDCStream *buf = codec_encode(p, (const byte *)"hello world", 11);
     codec_cleanup(p);
