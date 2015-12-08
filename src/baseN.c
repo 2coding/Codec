@@ -41,8 +41,8 @@ void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable
     p->group = group;
     p->bitslen = bitslen;
     p->egroup = group * 8 / bitslen;
-    p->chunkled = TRUE;
-    p->padding = TRUE;
+    p->chunkled = CDCTRUE;
+    p->padding = CDCTRUE;
     p->entable = entable;
     p->detable = detable;
     p->maxchr = maxchr;

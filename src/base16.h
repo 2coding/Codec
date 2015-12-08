@@ -31,8 +31,8 @@
 #include "codecbase.h"
 
 typedef struct base16 {
-    BOOL chunkled;
-    BOOL ignorecase;
+    CDCBOOL chunkled;
+    CDCBOOL ignorecase;
 }base16;
 
 void base16_init(void *p, CODECWork *work);

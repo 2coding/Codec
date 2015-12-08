@@ -88,15 +88,15 @@ const byte *stream_data(const CDCStream *st) {
     return st->data;
 }
 
-BOOL stream_empty(const CDCStream *st) {
+CDCBOOL stream_empty(const CDCStream *st) {
     return !st || !st->size;
 }
 
 #pragma mark - write
-static BOOL _check_stream(CDCStream *st, size_t len) {
+static CDCBOOL _check_stream(CDCStream *st, size_t len) {
     cdcassert(len);
     if (!st || !st->data || !len) {
-        return FALSE;
+        return CDCFALSE;
     }
     
     size_t newLen = st->size + len;
@@ -104,7 +104,7 @@ static BOOL _check_stream(CDCStream *st, size_t len) {
         newLen = _max(newLen, st->length * 2);
         byte *data = malloc(newLen * sizeof(byte));
         if (!data) {
-            return FALSE;
+            return CDCFALSE;
         }
         
         memcpy(data, st->data, st->size * sizeof(byte));
@@ -113,7 +113,7 @@ static BOOL _check_stream(CDCStream *st, size_t len) {
         st->length = newLen;
     }
     
-    return TRUE;
+    return CDCTRUE;
 }
 
 size_t stream_write_b(CDCStream *st, byte b) {

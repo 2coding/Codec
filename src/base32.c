@@ -90,8 +90,8 @@ static CODECode _base32_setopt(void *p, CODECOption opt, va_list args);
 
 void base32_init(void *p, CODECWork *work) {
     struct base32 *ptr = (struct base32 *)p;
-    ptr->ignorecase = FALSE;
-    ptr->hex = FALSE;
+    ptr->ignorecase = CDCFALSE;
+    ptr->hex = CDCFALSE;
     baseN_init(&ptr->bn, 5, 5, (char *)_standard_table, (byte *)_standard_decoding_table, 'Z', 0x1f);
     
     work->setup = _base32_setopt;

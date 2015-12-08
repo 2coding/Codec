@@ -40,7 +40,7 @@ void stream_clear(CDCStream *st);
 
 size_t stream_size(const CDCStream *st);
 const byte *stream_data(const CDCStream *st);
-BOOL stream_empty(const CDCStream *st);
+CDCBOOL stream_empty(const CDCStream *st);
 
 size_t stream_write_b(CDCStream *st, byte b);
 size_t stream_write_bytes(CDCStream *st, const byte *data, size_t dataLen);

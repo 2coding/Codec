@@ -171,7 +171,7 @@ CODECode codec_setup(CODEC codec, CODECOption opt, ...) {
     return c->code;
 }
 
-static const CDCStream * _codec_work(_codec *c, BOOL encoding, const byte *data, size_t datalen) {
+static const CDCStream * _codec_work(_codec *c, CDCBOOL encoding, const byte *data, size_t datalen) {
     if (!c) {
         return 0;
     }
@@ -198,11 +198,11 @@ static const CDCStream * _codec_work(_codec *c, BOOL encoding, const byte *data,
 }
 
 const CDCStream * codec_encode(CODEC codec, const byte *data, size_t datalen) {
-    return _codec_work(codec, TRUE, data, datalen);
+    return _codec_work(codec, CDCTRUE, data, datalen);
 }
 
 const CDCStream * codec_decode(CODEC codec, const byte *data, size_t datalen) {
-    return _codec_work(codec, FALSE, data, datalen);
+    return _codec_work(codec, CDCFALSE, data, datalen);
 }
 
 CODECode codec_lasterror(CODEC codec) {

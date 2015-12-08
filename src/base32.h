@@ -32,8 +32,8 @@
 
 typedef struct base32 {
     baseN bn;
-    BOOL hex;
-    BOOL ignorecase;
+    CDCBOOL hex;
+    CDCBOOL ignorecase;
 }base32;
 
 void base32_init(void *p, CODECWork *work);

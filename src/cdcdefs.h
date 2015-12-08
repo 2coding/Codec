@@ -36,9 +36,9 @@
 #include <string.h>
 #include <stdarg.h>
 
-typedef long int BOOL;
-#define TRUE 1
-#define FALSE 0
+typedef long int CDCBOOL;
+#define CDCTRUE 1L
+#define CDCFALSE 0L
 
 typedef uint8_t byte;
 

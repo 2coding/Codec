@@ -34,8 +34,8 @@ static CODECode _base16_decoding(void *p, const byte *data, size_t datalen, CDCS
 
 void base16_init(void *p, CODECWork *work) {
     base16 *b16 = p;
-    b16->chunkled = TRUE;
-    b16->ignorecase = FALSE;
+    b16->chunkled = CDCTRUE;
+    b16->ignorecase = CDCFALSE;
     
     work->setup = _base16_setopt;
     work->encoding = _base16_encoding;

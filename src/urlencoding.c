@@ -114,17 +114,17 @@ static byte _url_de_digit(byte b) {
     }
 }
 
-static BOOL _url_de_escape(byte *escape) {
+static CDCBOOL _url_de_escape(byte *escape) {
     cdcassert(escape);
     byte b0 = _url_de_digit(escape[0]);
     byte b1 = _url_de_digit(escape[1]);
     if (b0 > 0x0f || b1 > 0x0f) {
-        return FALSE;
+        return CDCFALSE;
     }
     
     b1 |= ((b0 << 4) & 0xf0);
     escape[0] = b1;
-    return TRUE;
+    return CDCTRUE;
 }
 
 CODECode _url_decoding(void *p, const byte *data, size_t dataLen, CDCStream *st) {

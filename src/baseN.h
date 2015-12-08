@@ -36,8 +36,8 @@ typedef struct baseN{
     byte group;
     byte bitslen;
     byte egroup;
-    BOOL chunkled;
-    BOOL padding;
+    CDCBOOL chunkled;
+    CDCBOOL padding;
     
     char *entable;
     byte *detable;
