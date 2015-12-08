@@ -1,0 +1,403 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C3F285801C16BD3F00B2F4D2 /* base16.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285701C16BD3F00B2F4D2 /* base16.c */; };
+		C3F285811C16BD3F00B2F4D2 /* base16.h in Headers */ = {isa = PBXBuildFile; fileRef = C3F285711C16BD3F00B2F4D2 /* base16.h */; };
+		C3F285821C16BD3F00B2F4D2 /* base32.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285721C16BD3F00B2F4D2 /* base32.c */; };
+		C3F285831C16BD3F00B2F4D2 /* base32.h in Headers */ = {isa = PBXBuildFile; fileRef = C3F285731C16BD3F00B2F4D2 /* base32.h */; };
+		C3F285841C16BD3F00B2F4D2 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285741C16BD3F00B2F4D2 /* base64.c */; };
+		C3F285851C16BD3F00B2F4D2 /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = C3F285751C16BD3F00B2F4D2 /* base64.h */; };
+		C3F285861C16BD3F00B2F4D2 /* baseN.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285761C16BD3F00B2F4D2 /* baseN.c */; };
+		C3F285871C16BD3F00B2F4D2 /* baseN.h in Headers */ = {isa = PBXBuildFile; fileRef = C3F285771C16BD3F00B2F4D2 /* baseN.h */; };
+		C3F285881C16BD3F00B2F4D2 /* cdcdefs.h in Headers */ = {isa = PBXBuildFile; fileRef = C3F285781C16BD3F00B2F4D2 /* cdcdefs.h */; };
+		C3F285891C16BD3F00B2F4D2 /* cdcstream.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285791C16BD3F00B2F4D2 /* cdcstream.c */; };
+		C3F2858A1C16BD3F00B2F4D2 /* cdcstream.h in Headers */ = {isa = PBXBuildFile; fileRef = C3F2857A1C16BD3F00B2F4D2 /* cdcstream.h */; };
+		C3F2858B1C16BD3F00B2F4D2 /* codec.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F2857B1C16BD3F00B2F4D2 /* codec.c */; };
+		C3F2858C1C16BD3F00B2F4D2 /* codec.h in Headers */ = {isa = PBXBuildFile; fileRef = C3F2857C1C16BD3F00B2F4D2 /* codec.h */; };
+		C3F2858D1C16BD3F00B2F4D2 /* codecbase.h in Headers */ = {isa = PBXBuildFile; fileRef = C3F2857D1C16BD3F00B2F4D2 /* codecbase.h */; };
+		C3F2858E1C16BD3F00B2F4D2 /* urlencoding.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F2857E1C16BD3F00B2F4D2 /* urlencoding.c */; };
+		C3F2858F1C16BD3F00B2F4D2 /* urlencoding.h in Headers */ = {isa = PBXBuildFile; fileRef = C3F2857F1C16BD3F00B2F4D2 /* urlencoding.h */; };
+		C3F285901C16BD5500B2F4D2 /* base16.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285701C16BD3F00B2F4D2 /* base16.c */; };
+		C3F285911C16BD5500B2F4D2 /* base32.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285721C16BD3F00B2F4D2 /* base32.c */; };
+		C3F285921C16BD5500B2F4D2 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285741C16BD3F00B2F4D2 /* base64.c */; };
+		C3F285931C16BD5500B2F4D2 /* baseN.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285761C16BD3F00B2F4D2 /* baseN.c */; };
+		C3F285941C16BD5500B2F4D2 /* cdcstream.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F285791C16BD3F00B2F4D2 /* cdcstream.c */; };
+		C3F285951C16BD5500B2F4D2 /* codec.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F2857B1C16BD3F00B2F4D2 /* codec.c */; };
+		C3F285961C16BD5500B2F4D2 /* urlencoding.c in Sources */ = {isa = PBXBuildFile; fileRef = C3F2857E1C16BD3F00B2F4D2 /* urlencoding.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C3F285541C16BCA900B2F4D2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		C3F285291C16BAF600B2F4D2 /* libCodec.OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCodec.OSX.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3F285561C16BCA900B2F4D2 /* libCodec.IOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCodec.IOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3F285701C16BD3F00B2F4D2 /* base16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base16.c; sourceTree = "<group>"; };
+		C3F285711C16BD3F00B2F4D2 /* base16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base16.h; sourceTree = "<group>"; };
+		C3F285721C16BD3F00B2F4D2 /* base32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base32.c; sourceTree = "<group>"; };
+		C3F285731C16BD3F00B2F4D2 /* base32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base32.h; sourceTree = "<group>"; };
+		C3F285741C16BD3F00B2F4D2 /* base64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base64.c; sourceTree = "<group>"; };
+		C3F285751C16BD3F00B2F4D2 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base64.h; sourceTree = "<group>"; };
+		C3F285761C16BD3F00B2F4D2 /* baseN.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = baseN.c; sourceTree = "<group>"; };
+		C3F285771C16BD3F00B2F4D2 /* baseN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = baseN.h; sourceTree = "<group>"; };
+		C3F285781C16BD3F00B2F4D2 /* cdcdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cdcdefs.h; sourceTree = "<group>"; };
+		C3F285791C16BD3F00B2F4D2 /* cdcstream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdcstream.c; sourceTree = "<group>"; };
+		C3F2857A1C16BD3F00B2F4D2 /* cdcstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cdcstream.h; sourceTree = "<group>"; };
+		C3F2857B1C16BD3F00B2F4D2 /* codec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = codec.c; sourceTree = "<group>"; };
+		C3F2857C1C16BD3F00B2F4D2 /* codec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = codec.h; sourceTree = "<group>"; };
+		C3F2857D1C16BD3F00B2F4D2 /* codecbase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = codecbase.h; sourceTree = "<group>"; };
+		C3F2857E1C16BD3F00B2F4D2 /* urlencoding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = urlencoding.c; sourceTree = "<group>"; };
+		C3F2857F1C16BD3F00B2F4D2 /* urlencoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = urlencoding.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C3F285261C16BAF600B2F4D2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3F285531C16BCA900B2F4D2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C3F284E81C16B88000B2F4D2 = {
+			isa = PBXGroup;
+			children = (
+				C3F2856F1C16BD3F00B2F4D2 /* src */,
+				C3F284F21C16B88000B2F4D2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C3F284F21C16B88000B2F4D2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C3F285291C16BAF600B2F4D2 /* libCodec.OSX.a */,
+				C3F285561C16BCA900B2F4D2 /* libCodec.IOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C3F2856F1C16BD3F00B2F4D2 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C3F285701C16BD3F00B2F4D2 /* base16.c */,
+				C3F285711C16BD3F00B2F4D2 /* base16.h */,
+				C3F285721C16BD3F00B2F4D2 /* base32.c */,
+				C3F285731C16BD3F00B2F4D2 /* base32.h */,
+				C3F285741C16BD3F00B2F4D2 /* base64.c */,
+				C3F285751C16BD3F00B2F4D2 /* base64.h */,
+				C3F285761C16BD3F00B2F4D2 /* baseN.c */,
+				C3F285771C16BD3F00B2F4D2 /* baseN.h */,
+				C3F285781C16BD3F00B2F4D2 /* cdcdefs.h */,
+				C3F285791C16BD3F00B2F4D2 /* cdcstream.c */,
+				C3F2857A1C16BD3F00B2F4D2 /* cdcstream.h */,
+				C3F2857B1C16BD3F00B2F4D2 /* codec.c */,
+				C3F2857C1C16BD3F00B2F4D2 /* codec.h */,
+				C3F2857D1C16BD3F00B2F4D2 /* codecbase.h */,
+				C3F2857E1C16BD3F00B2F4D2 /* urlencoding.c */,
+				C3F2857F1C16BD3F00B2F4D2 /* urlencoding.h */,
+			);
+			name = src;
+			path = ../../../src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		C3F285271C16BAF600B2F4D2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3F285831C16BD3F00B2F4D2 /* base32.h in Headers */,
+				C3F2858A1C16BD3F00B2F4D2 /* cdcstream.h in Headers */,
+				C3F2858D1C16BD3F00B2F4D2 /* codecbase.h in Headers */,
+				C3F285811C16BD3F00B2F4D2 /* base16.h in Headers */,
+				C3F2858C1C16BD3F00B2F4D2 /* codec.h in Headers */,
+				C3F285881C16BD3F00B2F4D2 /* cdcdefs.h in Headers */,
+				C3F2858F1C16BD3F00B2F4D2 /* urlencoding.h in Headers */,
+				C3F285871C16BD3F00B2F4D2 /* baseN.h in Headers */,
+				C3F285851C16BD3F00B2F4D2 /* base64.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		C3F285281C16BAF600B2F4D2 /* Codec.OSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3F2852A1C16BAF600B2F4D2 /* Build configuration list for PBXNativeTarget "Codec.OSX" */;
+			buildPhases = (
+				C3F285251C16BAF600B2F4D2 /* Sources */,
+				C3F285261C16BAF600B2F4D2 /* Frameworks */,
+				C3F285271C16BAF600B2F4D2 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Codec.OSX;
+			productName = Codec.OSX;
+			productReference = C3F285291C16BAF600B2F4D2 /* libCodec.OSX.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		C3F285551C16BCA900B2F4D2 /* Codec.IOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3F2855C1C16BCA900B2F4D2 /* Build configuration list for PBXNativeTarget "Codec.IOS" */;
+			buildPhases = (
+				C3F285521C16BCA900B2F4D2 /* Sources */,
+				C3F285531C16BCA900B2F4D2 /* Frameworks */,
+				C3F285541C16BCA900B2F4D2 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Codec.IOS;
+			productName = Codec.IOS;
+			productReference = C3F285561C16BCA900B2F4D2 /* libCodec.IOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C3F284E91C16B88000B2F4D2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = 2Coding;
+				TargetAttributes = {
+					C3F285281C16BAF600B2F4D2 = {
+						CreatedOnToolsVersion = 7.1.1;
+					};
+					C3F285551C16BCA900B2F4D2 = {
+						CreatedOnToolsVersion = 7.1.1;
+					};
+				};
+			};
+			buildConfigurationList = C3F284EC1C16B88000B2F4D2 /* Build configuration list for PBXProject "Codec" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C3F284E81C16B88000B2F4D2;
+			productRefGroup = C3F284F21C16B88000B2F4D2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C3F285281C16BAF600B2F4D2 /* Codec.OSX */,
+				C3F285551C16BCA900B2F4D2 /* Codec.IOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C3F285251C16BAF600B2F4D2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3F2858B1C16BD3F00B2F4D2 /* codec.c in Sources */,
+				C3F2858E1C16BD3F00B2F4D2 /* urlencoding.c in Sources */,
+				C3F285801C16BD3F00B2F4D2 /* base16.c in Sources */,
+				C3F285891C16BD3F00B2F4D2 /* cdcstream.c in Sources */,
+				C3F285861C16BD3F00B2F4D2 /* baseN.c in Sources */,
+				C3F285841C16BD3F00B2F4D2 /* base64.c in Sources */,
+				C3F285821C16BD3F00B2F4D2 /* base32.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3F285521C16BCA900B2F4D2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3F285901C16BD5500B2F4D2 /* base16.c in Sources */,
+				C3F285911C16BD5500B2F4D2 /* base32.c in Sources */,
+				C3F285921C16BD5500B2F4D2 /* base64.c in Sources */,
+				C3F285931C16BD5500B2F4D2 /* baseN.c in Sources */,
+				C3F285941C16BD5500B2F4D2 /* cdcstream.c in Sources */,
+				C3F285951C16BD5500B2F4D2 /* codec.c in Sources */,
+				C3F285961C16BD5500B2F4D2 /* urlencoding.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C3F284F31C16B88000B2F4D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C3F284F41C16B88000B2F4D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C3F2852B1C16BAF600B2F4D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C3F2852C1C16BAF600B2F4D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		C3F2855D1C16BCA900B2F4D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		C3F2855E1C16BCA900B2F4D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C3F284EC1C16B88000B2F4D2 /* Build configuration list for PBXProject "Codec" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3F284F31C16B88000B2F4D2 /* Debug */,
+				C3F284F41C16B88000B2F4D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C3F2852A1C16BAF600B2F4D2 /* Build configuration list for PBXNativeTarget "Codec.OSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3F2852B1C16BAF600B2F4D2 /* Debug */,
+				C3F2852C1C16BAF600B2F4D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		C3F2855C1C16BCA900B2F4D2 /* Build configuration list for PBXNativeTarget "Codec.IOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3F2855D1C16BCA900B2F4D2 /* Debug */,
+				C3F2855E1C16BCA900B2F4D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C3F284E91C16B88000B2F4D2 /* Project object */;
+}
