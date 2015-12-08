@@ -30,10 +30,10 @@
 #define base64_h
 #include "baseN.h"
 
-CODEC_STRUCT_DECLARE(base64)
-baseN bn;
-CODEC_STRUCT_DECLARE_END;
+typedef struct base64 {
+    baseN bn;
+}base64;
 
-void *base64_init(CODECBase *p);
+void base64_init(void *p, CODECWork *work);
 
 #endif /* base64_h */

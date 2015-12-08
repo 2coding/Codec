@@ -33,6 +33,12 @@
 #include "urlencoding_tests.hpp"
 
 int main(int argc, const char * argv[]) {
+    test_init();
+    
     testing::InitGoogleTest(&argc, (char **)argv);
-    return RUN_ALL_TESTS();
+    int ret = RUN_ALL_TESTS();
+    
+    test_cleanup();
+    
+    return ret;
 }

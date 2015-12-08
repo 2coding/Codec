@@ -29,18 +29,16 @@
 #include "urlencoding.h"
 #include "cdcstream.h"
 
-static void _urlencoding_cleanup(CODECBase *p) {
-    struct urlencoding *ue = (struct urlencoding *)p;
+static void _urlencoding_cleanup(void *p) {
+    urlencoding *ue = p;
     free(ue->safechr);
 }
 
-static void _url_encoding(const byte *safechr, CDCStream *st, const byte *data, size_t dataLen);
-static BOOL _url_decoding(const byte *safechr, CDCStream *st, const byte *data, size_t dataLen);
+static CODECode _url_encoding(void *p, const byte *data, size_t dataLen, CDCStream *st);
+static CODECode _url_decoding(void *p, const byte *data, size_t dataLen, CDCStream *st);
 
-static CODECode _urlencoding_work(CODECBase *p, const CDCStream *st);
-
-void *urlencoding_init(CODECBase *p) {
-    struct urlencoding *ue = (struct urlencoding *)p;
+void urlencoding_init(void *p, CODECWork *work) {
+    urlencoding *ue = p;
     ue->safechr = malloc(0xff * sizeof(byte));
     memset(ue->safechr, 0xff, 0xff * sizeof(byte));
     
@@ -63,23 +61,9 @@ void *urlencoding_init(CODECBase *p) {
     ue->safechr['*'] = '*';
     ue->safechr[' '] = ' ';
     
-    ue->cleanup = _urlencoding_cleanup;
-    ue->work = _urlencoding_work;
-    return p;
-}
-
-CODECode _urlencoding_work(CODECBase *p, const CDCStream *st) {
-    struct urlencoding *ue = (struct urlencoding *)p;
-    if (p->method == CODECEncoding) {
-        _url_encoding(ue->safechr, p->result, stream_data(st), stream_size(st));
-    }
-    else {
-        if (!_url_decoding(ue->safechr, p->result, stream_data(st), stream_size(st))) {
-            return CODECInvalidInput;
-        }
-    }
-    
-    return CODECOk;
+    work->cleanup = _urlencoding_cleanup;
+    work->encoding = _url_encoding;
+    work->decoding = _url_decoding;
 }
 
 #pragma mark - encoding
@@ -92,25 +76,29 @@ static byte _url_digit(byte b) {
         return b - 10 + 'A';
     }
 }
-void _url_encoding(const byte *safechr, CDCStream *buf, const byte *data, size_t dataLen) {
+
+CODECode _url_encoding(void *p, const byte *data, size_t dataLen, CDCStream *st) {
     size_t i = 0;
     byte c = 0;
     byte escape[3] = {0};
     escape[0] = '%';
+    byte *safechr = ((urlencoding *)p)->safechr;
     for (i = 0; i < dataLen; ++i) {
         c = data[i];
         if (c == 0xff) {
-            stream_write_bytes(buf, (const byte *)"%FF", 3);
+            stream_write_bytes(st, (const byte *)"%FF", 3);
         }
         else if(safechr[c] == 0xff) {
             escape[1] = _url_digit((c >> 4) & 0x0f);
             escape[2] = _url_digit(c & 0x0f);
-            stream_write_bytes(buf, escape, 3);
+            stream_write_bytes(st, escape, 3);
         }
         else {
-            stream_write_b(buf, c == ' ' ? '+' : c);
+            stream_write_b(st, c == ' ' ? '+' : c);
         }
     }
+    
+    return CODECOk;
 }
 
 #pragma mark - decoding
@@ -139,38 +127,39 @@ static BOOL _url_de_escape(byte *escape) {
     return TRUE;
 }
 
-BOOL _url_decoding(const byte *safechr, CDCStream *buf, const byte *data, size_t dataLen) {
+CODECode _url_decoding(void *p, const byte *data, size_t dataLen, CDCStream *st) {
     size_t i = 0;
     byte c = 0;
     byte escape[2] = {0};
+    byte *safechr = ((urlencoding *)p)->safechr;
     for (i = 0; i < dataLen;) {
         c = data[i];
         if (c == '%') {
             if (i + 2 >= dataLen) {
-                return FALSE;
+                return CODECInvalidInput;
             }
             
             escape[0] = data[i + 1];
             escape[1] = data[i + 2];
             if (!_url_de_escape(escape)) {
-                return FALSE;
+                return CODECInvalidInput;
             }
             
-            stream_write_b(buf, escape[0]);
+            stream_write_b(st, escape[0]);
             i += 3;
         }
         else if (c == '+') {
-            stream_write_b(buf, ' ');
+            stream_write_b(st, ' ');
             ++i;
         }
         else if (safechr[c] == 0xff) {
-            return FALSE;
+            return CODECInvalidInput;
         }
         else {
-            stream_write_b(buf, c);
+            stream_write_b(st, c);
             ++i;
         }
     }
     
-    return TRUE;
+    return CODECOk;
 }

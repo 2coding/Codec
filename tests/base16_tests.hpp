@@ -32,17 +32,18 @@
 #include "test_base.hpp"
 
 static std::string _base16encode(const std::string &data) {
-    return _test_encoding(data, CODECBase16, CODECEncoding, CODECStandard, 1L);
+    CODECode code;
+    return _test_encoding(data, CODECBase16, CODECStandard, 1L, code);
 }
 
 static std::string _base16decode(const std::string &data) {
     CODECode code;
-    return _test_decoding(data, CODECBase16, CODECDecoding, CODECStandard, 1L, code);
+    return _test_decoding(data, CODECBase16, CODECStandard, 1L, code);
 }
 
 static std::string _base16decode_ignorecase(const std::string &data) {
     CODECode code;
-    return _test_decoding(data, CODECBase16, CODECDecoding, CODECBase16IgnoreCase, 1L, code);
+    return _test_decoding(data, CODECBase16, CODECBase16IgnoreCase, 1L, code);
 }
 
 TEST(base16_tests, encode_empty)

@@ -30,10 +30,10 @@
 #define urlencoding_h
 #include "codecbase.h"
 
-CODEC_STRUCT_DECLARE(urlencoding)
-byte *safechr;
-CODEC_STRUCT_DECLARE_END;
+typedef struct urlencoding {
+    byte *safechr;
+}urlencoding;
 
-void *urlencoding_init(CODECBase *p);
+void urlencoding_init(void *p, CODECWork *work);
 
 #endif

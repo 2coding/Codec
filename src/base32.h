@@ -30,12 +30,12 @@
 #define base32_h
 #include "baseN.h"
 
-CODEC_STRUCT_DECLARE(base32)
-baseN bn;
-BOOL hex;
-BOOL ignorecase;
-CODEC_STRUCT_DECLARE_END;
+typedef struct base32 {
+    baseN bn;
+    BOOL hex;
+    BOOL ignorecase;
+}base32;
 
-void *base32_init(CODECBase *p);
+void base32_init(void *p, CODECWork *work);
 
 #endif /* base32_h */

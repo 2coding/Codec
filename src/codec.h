@@ -29,25 +29,19 @@
 #ifndef codec_h
 #define codec_h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    
 #include "cdcdefs.h"
 #include "cdcstream.h"
     
-    typedef void *CODEC;
+typedef void *CODEC;
 
-    CODEC codec_init(CODECProtocol protocol, CODECMethod method);
-    void codec_cleanup(CODEC codec);
+CODEC codec_init();
+void codec_cleanup(CODEC codec);
     
-    CODECode codec_setup(CODEC codec, CODECOption opt, ...);
-    const CDCStream * codec_work(CODEC codec, const CDCStream *st);
+CODECode codec_setup(CODEC codec, CODECOption opt, ...);
+const CDCStream * codec_encode(CODEC codec, const byte *data, size_t datalen);
+const CDCStream * codec_decode(CODEC codec, const byte *data, size_t datalen);
     
-    void codec_reset(CODEC codec);
-    CODECode codec_lasterror(CODEC codec);
+void codec_reset(CODEC codec);
+CODECode codec_lasterror(CODEC codec);
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* codec_h */

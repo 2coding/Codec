@@ -86,17 +86,17 @@ static const byte _hex_ignorecase_decoding_table[] = {
 };
 
 
-static CODECode _base32_work(CODECBase *p, const CDCStream *st);
-static CODECode _base32_setopt(CODECBase *p, CODECOption opt, va_list args);
+static CODECode _base32_setopt(void *p, CODECOption opt, va_list args);
 
-void *base32_init(CODECBase *p) {
+void base32_init(void *p, CODECWork *work) {
     struct base32 *ptr = (struct base32 *)p;
     ptr->ignorecase = FALSE;
     ptr->hex = FALSE;
-    ptr->work = _base32_work;
-    ptr->setup = _base32_setopt;
     baseN_init(&ptr->bn, 5, 5, (char *)_standard_table, (byte *)_standard_decoding_table, 'Z', 0x1f);
-    return p;
+    
+    work->setup = _base32_setopt;
+    work->encoding = baseN_encoding;
+    work->decoding = baseN_decoding;
 }
 
 #define _BASE32_DECODING_TABLE(b32) (byte *)((b32)->ignorecase ? \
@@ -106,7 +106,7 @@ void *base32_init(CODECBase *p) {
 #define _BASE32_MAXCHAR(b32) ((b32)->ignorecase ? \
     ((b32)->hex ? 'v' : 'z') :\
     ((b32)->hex ? 'V' : 'Z'))
-CODECode _base32_setopt(CODECBase *p, CODECOption opt, va_list args) {
+CODECode _base32_setopt(void *p, CODECOption opt, va_list args) {
     struct base32 *b32 = (struct base32 *)p;
     CODECode code = CODECOk;
     switch (opt) {
@@ -129,9 +129,4 @@ CODECode _base32_setopt(CODECBase *p, CODECOption opt, va_list args) {
     }
     
     return code;
-}
-
-CODECode _base32_work(CODECBase *p, const CDCStream *st) {
-    struct base32 *b32 = (struct base32 *)p;
-    return baseN_work(&b32->bn, p, st);
 }

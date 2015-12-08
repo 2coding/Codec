@@ -27,40 +27,45 @@
  */
 #ifndef test_base_hpp
 #define test_base_hpp
+extern "C" {
 #include "codec.h"
+}
 
+CODEC _c;
+static void test_init() {
+    _c = codec_init();
+}
 
-static std::string _test_encoding(const std::string &data, CODECProtocol protocol, CODECMethod method, CODECOption opt, long v) {
-    CODEC p = codec_init(protocol, method);
-    codec_setup(p, opt, v);
-    CDCStream *st = stream_init_data((const byte *)data.data(), data.length());
-    const CDCStream *buf = codec_work(p, st);
+static void test_cleanup() {
+    codec_cleanup(_c);
+}
+
+static std::string _test_encoding(const std::string &data, CODECProtocol protocol, CODECOption opt, long v, CODECode &code) {
+    codec_reset(_c);
+    codec_setup(_c, CODECSpecialProtocol, protocol);
+    codec_setup(_c, opt, v);
+    const CDCStream *buf = codec_encode(_c, (const byte *)data.data(), data.length());
+    code = codec_lasterror(_c);
     if (stream_empty(buf)) {
         return "";
     }
     
     std::string ret((const char *)stream_data(buf), stream_size(buf));
-    stream_cleanup(st);
-    codec_cleanup(p);
-    
     return ret;
 }
 
-static std::string _test_decoding(const std::string &data, CODECProtocol protocol, CODECMethod method, CODECOption opt, long v, CODECode &code) {
-    CODEC p = codec_init(protocol, method);
-    codec_setup(p, opt, v);
+static std::string _test_decoding(const std::string &data, CODECProtocol protocol, CODECOption opt, long v, CODECode &code) {
+    codec_reset(_c);
+    codec_setup(_c, CODECSpecialProtocol, protocol);
+    codec_setup(_c, opt, v);
     
-    CDCStream *st = stream_init_data((const byte *)data.data(), data.length());
-    const CDCStream *buf = codec_work(p, st);
-    code = codec_lasterror(p);
+    const CDCStream *buf = codec_decode(_c, (const byte *)data.data(), data.length());
+    code = codec_lasterror(_c);
     if (stream_empty(buf)) {
         return "";
     }
     
     std::string ret((const char *)stream_data(buf), stream_size(buf));
-    stream_cleanup(st);
-    codec_cleanup(p);
-    
     return ret;
 }
 

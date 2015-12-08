@@ -30,10 +30,6 @@
 
 static const int _chunklen = 76;
 
-static void baseN_encoding(const baseN *p, const byte *data, size_t datalen, CDCStream *buf);
-
-static BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, CDCStream *buf);
-
 void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, byte maxchr, size_t mask) {
     cdcassert(p);
     cdcassert(entable);
@@ -70,31 +66,6 @@ CODECode baseN_setup(baseN *bn, CODECOption opt, va_list args) {
     }
     
     return code;
-}
-
-CODECode baseN_work(baseN *bn, CODECBase *p, const CDCStream *st) {
-    if (p->method == CODECEncoding) {
-//        size_t buflen = baseN_encoding_length(bn, data->length);
-//        if (!buflen) {
-//            return CODECEmptyInput;
-//        }
-//        
-//        CODECDATA_REINIT(p, buflen);
-        baseN_encoding(bn, stream_data(st), stream_size(st), p->result);
-    }
-    else {
-//        size_t buflen = baseN_decoding_length(bn, data->length);
-//        if (!buflen) {
-//            return CODECEmptyInput;
-//        }
-//        
-//        CODECDATA_REINIT(p, buflen);
-        if (!baseN_decoding(bn, stream_data(st), stream_size(st), p->result)) {
-            return CODECInvalidInput;
-        }
-    }
-    
-    return CODECOk;
 }
 
 #pragma mark - encoding
@@ -145,17 +116,19 @@ static void _encoding_left(const baseN *p, const byte *data, size_t datalen, CDC
     }
 }
 
-void baseN_encoding(const baseN *p, const byte *data, size_t datalen, CDCStream *buf) {
+CODECode baseN_encoding(void *p, const byte *data, size_t datalen, CDCStream *buf) {
     cdcassert(p);
     cdcassert(data && datalen);
     cdcassert(buf);
     
-    size_t i = 0, n = datalen / p->group;
+    baseN *bn = p;
+    size_t i = 0, n = datalen / bn->group;
     for (i = 0; i < n; ++i) {
-        _encoding_group(p, data + i * p->group, buf, p->group);
+        _encoding_group(p, data + i * bn->group, buf, bn->group);
     }
     
     _encoding_left(p, data, datalen, buf);
+    return CODECOk;
 }
 
 #pragma mark - decoding
@@ -178,17 +151,18 @@ static void _decoding_group(const baseN *p, uint64_t tmp, size_t group, CDCStrea
     }
 }
 
-BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, CDCStream *buf) {
+CODECode baseN_decoding(void *p, const byte *data, size_t datalen, CDCStream *buf) {
     cdcassert(p);
     cdcassert(data && datalen);
     cdcassert(buf);
     
+    baseN *bn = p;
     size_t i = 0, k = 0;
     uint64_t t = 0;
     long ret = 0;
-    const byte *table = p->detable;
-    uint64_t mask = p->mask;
-    const byte bitlens = p->bitslen * (p->egroup - 1);
+    const byte *table = bn->detable;
+    uint64_t mask = bn->mask;
+    const byte bitlens = bn->bitslen * (bn->egroup - 1);
     byte c = 0;
     for (i = 0; i < datalen; ++i) {
         c = data[i];
@@ -197,21 +171,21 @@ BOOL baseN_decoding(const baseN *p, const byte *data, size_t datalen, CDCStream 
             continue;
         }
         else if (ret < 0) {
-            return FALSE;
+            return CODECInvalidInput;
         }
         
-        t |= (table[c] & mask) << (bitlens - p->bitslen * k);
+        t |= (table[c] & mask) << (bitlens - bn->bitslen * k);
         ++k;
-        if (k == p->egroup) {
-            _decoding_group(p, t, p->group, buf);
+        if (k == bn->egroup) {
+            _decoding_group(p, t, bn->group, buf);
             k = 0;
             t = 0;
         }
     }
     
     if (k > 0 && t != 0) {
-        _decoding_group(p, t, k * p->bitslen / 8, buf);
+        _decoding_group(p, t, k * bn->bitslen / 8, buf);
     }
     
-    return TRUE;
+    return CODECOk;
 }

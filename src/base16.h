@@ -30,11 +30,11 @@
 #define base16_h
 #include "codecbase.h"
 
-CODEC_STRUCT_DECLARE(base16)
-BOOL chunkled;
-BOOL ignorecase;
-CODEC_STRUCT_DECLARE_END;
+typedef struct base16 {
+    BOOL chunkled;
+    BOOL ignorecase;
+}base16;
 
-void *base16_init(CODECBase *p);
+void base16_init(void *p, CODECWork *work);
 
 #endif

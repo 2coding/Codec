@@ -45,21 +45,20 @@ typedef uint8_t byte;
 #define cdcassert assert
 
 typedef enum {
-    CODECBase64,
+    CODECProtocolNone = -1,
+    
+    CODECBase64 = 0,
     CODECBase32,
     CODECBase16,
     
-    CODECURL
+    CODECURL,
+    CODECSupportCount,
 }CODECProtocol;
-
-typedef enum {
-    CODECEncoding,
-    CODECDecoding,
-}CODECMethod;
 
 typedef enum {
     CODECOk,
     
+    CODECNeedSpecailProtocol,
     CODECIgnoredOption,
     
     CODECEmptyInput,
@@ -69,6 +68,8 @@ typedef enum {
 }CODECode;
 
 typedef enum {
+    CODECSpecialProtocol,
+    
     CODECStandard,
     
     CODECBaseNChunkled,

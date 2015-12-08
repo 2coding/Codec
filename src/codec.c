@@ -33,39 +33,128 @@
 #include "base16.h"
 #include "urlencoding.h"
 
-CODEC codec_init(CODECProtocol protocol, CODECMethod method) {
-    CODECBase *p = 0;
+typedef struct _codec {
+    CODECode code;
+    CODECWork work;
+    CDCStream *result;
+    
+    CODECProtocol protocol;
+    union {
+        urlencoding url;
+        base16 b16;
+        base32 b32;
+        base64 b64;
+    }protocols;
+}_codec;
+
+void codec_reset(CODEC codec) {
+    if (!codec) {
+        return;
+    }
+    
+    _codec *c = codec;
+    
+    c->code = CODECNeedSpecailProtocol;
+    stream_clear(c->result);
+    
+    c->protocol = CODECProtocolNone;
+    if (c->work.cleanup) {
+        c->work.cleanup(&c->protocols);
+    }
+    memset(&c->work, 0, sizeof(CODECWork));
+}
+
+CODEC codec_init() {
+    _codec *c = malloc(sizeof(_codec));
+    
+    c->result = stream_init(0);
+    c->code = CODECNeedSpecailProtocol;
+    
+    c->protocol = CODECProtocolNone;
+    memset(&c->protocols, 0, sizeof(c->protocols));
+    
+    memset(&c->work, 0, sizeof(CODECWork));
+    
+    return c;
+}
+
+void codec_cleanup(CODEC codec) {
+    if (!codec) {
+        return;
+    }
+    
+    _codec *c = codec;
+    stream_cleanup(c->result);
+    
+    if (c->work.cleanup) {
+        c->work.cleanup(&c->protocols);
+    }
+    
+    free(c);
+}
+
+#pragma mark - setopt
+static CODECode _codec_special_protocol(_codec *c, long v) {
+    if (v < CODECProtocolNone || v >= CODECSupportCount) {
+        return CODECInvalidInput;
+    }
+    
+    CODECProtocol protocol = (CODECProtocol)v;
+    if (protocol == CODECProtocolNone) {
+        return CODECNeedSpecailProtocol;
+    }
+    
+    if (c->protocol == protocol) {
+        return CODECOk;
+    }
+    
+    if (c->protocol != CODECProtocolNone) {
+        codec_reset(c);
+    }
+    
+    initfunc fn = 0;
     switch (protocol) {
         case CODECBase64:
-            p = init(method, sizeof(struct base64), base64_init);
+            fn = base64_init;
             break;
             
         case CODECBase32:
-            p = init(method, sizeof(struct base32), base32_init);
+            fn = base32_init;
             break;
             
         case CODECBase16:
-            p = init(method, sizeof(struct base16), base16_init);
+            fn = base16_init;
             break;
             
         case CODECURL:
-            p = init(method, sizeof(struct urlencoding), urlencoding_init);
+            fn = urlencoding_init;
+            break;
             
         default:
             break;
     }
+
+    cdcassert(fn);
+    fn(&c->protocols, &c->work);
+    c->protocol = protocol;
     
-    if (p && !p->work) {
-        cleanup(p);
-        p = 0;
-    }
-    
-    return p;
+    return CODECOk;
 }
 
-void codec_cleanup(CODEC codec) {
-    CODECBase *p = codec;
-    cleanup(p);
+static CODECode _codec_setopt(_codec *c, CODECOption opt, va_list args) {
+    if (opt == CODECSpecialProtocol) {
+        return _codec_special_protocol(c, va_arg(args, long));
+    }
+    
+    if (c->protocol == CODECProtocolNone) {
+        return CODECNeedSpecailProtocol;
+    }
+
+    if (c->work.setup) {
+        return c->work.setup(&c->protocols, opt, args);
+    }
+    
+    return CODECIgnoredOption;
 }
 
 CODECode codec_setup(CODEC codec, CODECOption opt, ...) {
@@ -73,46 +162,47 @@ CODECode codec_setup(CODEC codec, CODECOption opt, ...) {
         return CODECNullPtr;
     }
     
-    CODECBase *p = codec;
+    _codec *c = codec;
     va_list args;
+    va_start(args, opt);
+    c->code = _codec_setopt(c, opt, args);
+    va_end(args);
     
-    if (p->setup) {
-        va_start(args, opt);
-        p->code = p->setup(p, opt, args);
-        va_end(args);
-    }
-    
-    return p->code;
+    return c->code;
 }
 
-const CDCStream * codec_work(CODEC codec, const CDCStream *st) {
-    if (!codec) {
+static const CDCStream * _codec_work(_codec *c, BOOL encoding, const byte *data, size_t datalen) {
+    if (!c) {
         return 0;
     }
     
-    CODECBase *p = codec;
-    if (stream_empty(st)) {
-        p->code = CODECEmptyInput;
+    if (c->protocol == CODECProtocolNone) {
+        c->code = CODECNeedSpecailProtocol;
         return 0;
     }
-    
-    if (p->work) {
-        stream_clear(p->result);
-        p->code = p->work(p, st);
+    else {
+        if (!data || !datalen) {
+            c->code = CODECEmptyInput;
+            return 0;
+        }
+        
+        workfunc fn = encoding ? c->work.encoding : c->work.decoding;
+        cdcassert(fn);
+        if (fn) {
+            stream_clear(c->result);
+            c->code = fn(&c->protocols, data, datalen, c->result);
+        }
+        
+        return c->code == CODECOk ? c->result : 0;
     }
-    
-    return p->code == CODECOk ? p->result : 0;
 }
 
-void codec_reset(CODEC codec) {
-    if (!codec) {
-        return;
-    }
-    
-    CODECBase *p = codec;
-    if (p->reset) {
-        p->reset(p);
-    }
+const CDCStream * codec_encode(CODEC codec, const byte *data, size_t datalen) {
+    return _codec_work(codec, TRUE, data, datalen);
+}
+
+const CDCStream * codec_decode(CODEC codec, const byte *data, size_t datalen) {
+    return _codec_work(codec, FALSE, data, datalen);
 }
 
 CODECode codec_lasterror(CODEC codec) {
@@ -120,6 +210,5 @@ CODECode codec_lasterror(CODEC codec) {
         return CODECNullPtr;
     }
     
-    CODECBase *p = codec;
-    return p->code;
+    return ((_codec *)codec)->code;
 }

@@ -27,28 +27,31 @@
  */
 #include "base16.h"
 
-static CODECode _base16_setopt(CODECBase *p, CODECOption opt, va_list args);
-static CODECode _base16_work(CODECBase *p, const CDCStream *st);
+static CODECode _base16_setopt(void *p, CODECOption opt, va_list args);
 
-static void _base16_encoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf);
-static BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf);
+static CODECode _base16_encoding(void *p, const byte *data, size_t datalen, CDCStream *buf);
+static CODECode _base16_decoding(void *p, const byte *data, size_t datalen, CDCStream *buf);
 
-void *base16_init(CODECBase *p) {
-    struct base16 *b16 = (struct base16 *)p;
+void base16_init(void *p, CODECWork *work) {
+    base16 *b16 = p;
     b16->chunkled = TRUE;
     b16->ignorecase = FALSE;
     
-    b16->setup = _base16_setopt;
-    b16->work = _base16_work;
-    return p;
+    work->setup = _base16_setopt;
+    work->encoding = _base16_encoding;
+    work->decoding = _base16_decoding;
 }
 
-CODECode _base16_setopt(CODECBase *p, CODECOption opt, va_list args) {
+CODECode _base16_setopt(void *p, CODECOption opt, va_list args) {
     CODECode code = CODECOk;
-    struct base16 *b16 = (struct base16 *)p;
+    base16 *b16 = p;
     switch (opt) {
         case CODECBase16IgnoreCase:
             b16->ignorecase = va_arg(args, long);
+            break;
+            
+        case CODECBaseNChunkled:
+            b16->chunkled = va_arg(args, long);
             break;
             
         default:
@@ -58,25 +61,13 @@ CODECode _base16_setopt(CODECBase *p, CODECOption opt, va_list args) {
     return code;
 }
 
-CODECode _base16_work(CODECBase *p, const CDCStream *st) {
-    if (p->method == CODECEncoding) {
-        _base16_encoding((const struct base16 *)p, stream_data(st), stream_size(st), p->result);
-    }
-    else {
-        if (!_base16_decoding((const struct base16 *)p, stream_data(st), stream_size(st), p->result)) {
-            return CODECInvalidInput;
-        }
-    }
-    
-    return CODECOk;
-}
-
-void _base16_encoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf) {
+CODECode _base16_encoding(void *p, const byte *data, size_t datalen, CDCStream *buf) {
     static const byte table[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     static const int chunklen = 76;
     
     size_t i = 0, idx = 0;
     byte arr[2] = {0};
+    base16 *b16 = p;
     for (i = 0; i < datalen; ++i) {
         if (b16->chunkled
             && idx > 0
@@ -88,11 +79,13 @@ void _base16_encoding(const struct base16 *b16, const byte *data, size_t datalen
         arr[1] = table[data[i] & 0x0f];
         idx = stream_write_bytes(buf, arr, 2);
     }
+    
+    return CODECOk;
 }
 
-BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen, CDCStream *buf) {
+CODECode _base16_decoding(void *p, const byte *data, size_t datalen, CDCStream *buf) {
     if (datalen % 2 != 0) {
-        return FALSE;
+        return CODECInvalidInput;
     }
     
     const static byte table[] = {
@@ -103,6 +96,7 @@ BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen
         0xff, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,                                                       // 40-46 A-F
         
     };
+    base16 *b16 = p;
     size_t i = 0, k = 0;
     byte c = 0, t = 0;
     for (i = 0; i < datalen; ++i) {
@@ -116,12 +110,12 @@ BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen
         }
         
         if (c > 'F') {
-            return FALSE;
+            return CODECInvalidInput;
         }
         
         c = table[c];
         if (c == 0xff) {
-            return FALSE;
+            return CODECInvalidInput;
         }
         
         t |= (c << (4 - 4 * k)) & 0xff;
@@ -134,8 +128,8 @@ BOOL _base16_decoding(const struct base16 *b16, const byte *data, size_t datalen
     }
     
     if (k || t) {
-        return FALSE;
+        return CODECInvalidInput;
     }
     
-    return TRUE;
+    return CODECOk;
 }

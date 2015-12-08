@@ -31,34 +31,18 @@
 #include "cdcdefs.h"
 #include "cdcstream.h"
 
-typedef struct CODECBase CODECBase;
+typedef struct CODECWork CODECWork;
 
-typedef void *(*initfunc) (CODECBase *);
-typedef void (*cleanupfunc) (CODECBase *);
-typedef CODECode (*setupfunc) (CODECBase *, CODECOption, va_list);
-typedef CODECode (*workfunc) (CODECBase *, const CDCStream *st);
-typedef void (*resetfunc) (CODECBase *);
+typedef void (*initfunc) (void *, CODECWork *);
+typedef void (*cleanupfunc) (void *);
+typedef CODECode (*setupfunc) (void *, CODECOption, va_list);
+typedef CODECode (*workfunc) (void *, const byte *, size_t, CDCStream *);
 
-#define CODECBASE_MEMEBER \
-    CODECMethod method;\
-    CDCStream *result;\
-    CODECode code;\
-    initfunc init;\
-    cleanupfunc cleanup;\
-    setupfunc setup;\
-    workfunc work;\
-    resetfunc reset;
+struct CODECWork {
+    cleanupfunc cleanup;
+    setupfunc setup;
+    workfunc encoding;
+    workfunc decoding;
+};
 
-#define CODEC_STRUCT_DECLARE(name) \
-struct name {\
-    CODECBASE_MEMEBER
-
-#define CODEC_STRUCT_DECLARE_END }
-
-CODEC_STRUCT_DECLARE(CODECBase)
-CODEC_STRUCT_DECLARE_END;
-
-CODECBase * init(CODECMethod method, size_t size, initfunc fn);
-void cleanup(CODECBase *p);
-
-#endif /* codecbase_h */
+#endif

@@ -33,11 +33,12 @@
 #include "test_base.hpp"
 
 static std::string _base64encode(const std::string &data, CODECOption opt, long v) {
-    return _test_encoding(data, CODECBase64, CODECEncoding, opt, v);
+    CODECode code;
+    return _test_encoding(data, CODECBase64, opt, v, code);
 }
 
 static std::string _base64decode(const std::string &data, CODECode &code) {
-    return _test_decoding(data, CODECBase64, CODECDecoding, CODECStandard, 1L, code);
+    return _test_decoding(data, CODECBase64, CODECStandard, 1L, code);
 }
 
 TEST(base64_tests, encode_option)
@@ -47,12 +48,6 @@ TEST(base64_tests, encode_option)
     
     result = _base64encode("abcdefghijklmnopqrstuvwxyz-_0123456789/!?ABCDEFGHIJKLMNOPQRSTUVWXYZ", CODECBaseNPadding, 0);
     EXPECT_EQ(result, "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXotXzAxMjM0NTY3ODkvIT9BQkNERUZHSElKS0xNTk9Q\r\nUVJTVFVWV1hZWg");
-}
-
-TEST(base64_tests, ignore_option)
-{
-    CODEC p  = codec_init(CODECBase64, CODECEncoding);
-    codec_cleanup(p);
 }
 
 TEST(base64_tests, encode_standard)
@@ -121,17 +116,19 @@ TEST(base64_tests, decode_invalid_input)
 
 TEST(base64_tests, nullptr_test)
 {
-    CODEC p = codec_init(CODECBase64, CODECEncoding);
-    EXPECT_EQ(codec_work(p, 0), nullptr);
+    CODEC p = codec_init();
+    codec_setup(p, CODECSpecialProtocol, CODECBase64);
+    EXPECT_EQ(codec_encode(p, 0, 0), nullptr);
     EXPECT_EQ(codec_lasterror(p), CODECEmptyInput);
     codec_cleanup(p);
     
-    p = codec_init(CODECBase64, CODECDecoding);
-    EXPECT_EQ(codec_work(p, 0), nullptr);
+    p = codec_init();
+    codec_setup(p, CODECSpecialProtocol, CODECBase64);
+    EXPECT_EQ(codec_decode(p, 0, 0), nullptr);
     EXPECT_EQ(codec_lasterror(p), CODECEmptyInput);
     codec_cleanup(p);
     
-    EXPECT_EQ(codec_work(0, 0), nullptr);
+    EXPECT_EQ(codec_decode(0, 0, 0), nullptr);
     EXPECT_EQ(codec_setup(0, CODECBase64UrlSafe, 1L), CODECNullPtr);
     EXPECT_EQ(codec_lasterror(0), CODECNullPtr);
 }

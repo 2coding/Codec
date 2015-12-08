@@ -56,20 +56,20 @@ static const byte _decode_table[] = {
     0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33                                //70-7a 'p' - 'z'
 };
 
-static CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args);
-static CODECode _base64_work(CODECBase *p, const CDCStream *st);
+static CODECode _base64_setopt(void *p, CODECOption opt, va_list args);
 
 #pragma mark - init
-void *base64_init(CODECBase *p) {
-    struct base64 *ptr = (struct base64 *)p;
-    ptr->setup = _base64_setopt;
-    ptr->work = _base64_work;
+void base64_init(void *p, CODECWork *work) {
     
+    work->setup = _base64_setopt;
+    work->encoding = baseN_encoding;
+    work->decoding = baseN_decoding;
+    
+    base64 *ptr = p;
     baseN_init(&ptr->bn, 3, 6, (char *)_standard_table, (byte *)_decode_table, 'z', 0x3f);
-    return ptr;
 }
 
-CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
+CODECode _base64_setopt(void *p, CODECOption opt, va_list args) {
     long larg = 0;
     struct base64 *ptr = (struct base64 *)p;
     CODECode code = CODECOk;
@@ -92,9 +92,4 @@ CODECode _base64_setopt(CODECBase *p, CODECOption opt, va_list args) {
     }
     
     return code;
-}
-
-CODECode _base64_work(CODECBase *p, const CDCStream *st) {
-    struct base64 *ptr = (struct base64 *)p;
-    return baseN_work(&ptr->bn, p, st);
 }

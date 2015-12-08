@@ -27,35 +27,3 @@
  */
 
 #include "codecbase.h"
-
-CODECBase * init(CODECMethod method, size_t size, initfunc fn) {
-    cdcassert(size >= sizeof(CODECBase));
-    if (size < sizeof(CODECBase)) {
-        return 0;
-    }
-    
-    CODECBase *p = malloc(size);
-    memset(p, 0, size);
-    
-    p->method = method;
-    p->result = stream_init(0);
-    p->code = CODECOk;
-    
-    p->init = fn;
-    
-    return p->init(p);
-}
-
-void cleanup(CODECBase *p) {
-    if (!p) {
-        return;
-    }
-    
-    if (p->cleanup) {
-        p->cleanup(p);
-    }
-    
-    stream_cleanup(p->result);
-    
-    free(p);
-}

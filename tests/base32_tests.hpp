@@ -33,15 +33,16 @@
 #include "test_base.hpp"
 
 static std::string _base32encode(const std::string &data, CODECOption opt, long v) {
-    return _test_encoding(data, CODECBase32, CODECEncoding, opt, v);
+    CODECode code;
+    return _test_encoding(data, CODECBase32, opt, v, code);
 }
 
 static std::string _base32decodehex(const std::string &data, CODECode &code, long v) {
-    return _test_decoding(data, CODECBase32, CODECDecoding, CODECBase32Hex, v, code);
+    return _test_decoding(data, CODECBase32, CODECBase32Hex, v, code);
 }
 
 static std::string _base32decode_ignorecase(const std::string &data, CODECode &code) {
-    return _test_decoding(data, CODECBase32, CODECDecoding, CODECBase32IgnoreCase, 1L, code);
+    return _test_decoding(data, CODECBase32, CODECBase32IgnoreCase, 1L, code);
 }
 
 static std::string _base32decode(const std::string &data, CODECode &code) {

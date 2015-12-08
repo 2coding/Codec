@@ -31,12 +31,13 @@
 #include "test_base.hpp"
 
 static std::string _urlencode(const std::string &data) {
-    return _test_encoding(data, CODECURL, CODECEncoding, CODECStandard, 1L);
+    CODECode code;
+    return _test_encoding(data, CODECURL, CODECStandard, 1L, code);
 }
 
 static std::string _urldecode(const std::string &data) {
     CODECode code;
-    return _test_decoding(data, CODECURL, CODECDecoding, CODECStandard, 1L, code);
+    return _test_decoding(data, CODECURL, CODECStandard, 1L, code);
 }
 
 TEST(urlcodec_tests, encode_empty)

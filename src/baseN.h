@@ -46,8 +46,11 @@ typedef struct baseN{
 }baseN;
 
 void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, byte maxchr, size_t mask);
+
 CODECode baseN_setup(baseN *bn, CODECOption opt, va_list args);
-CODECode baseN_work(baseN *bn, CODECBase *p, const CDCStream *st);
+
+CODECode baseN_encoding(void *p, const byte *data, size_t datalen, CDCStream *buf);
+CODECode baseN_decoding(void *p, const byte *data, size_t datalen, CDCStream *buf);
 
 
 #endif /* baseN_h */
