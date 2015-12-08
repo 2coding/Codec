@@ -10,6 +10,8 @@ General encoding/decoding algorithms (for example base64, URL)
 
 ### Requirement
 	Xcode 7.1.1+
+	IOS 6.0+
+	OSX 10.4+
     
 ### Example:
     CODEC p = codec_init();
