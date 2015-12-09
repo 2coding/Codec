@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C302BED91BFABACF006EFCA7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C302BED81BFABACF006EFCA7 /* main.cpp */; };
 		C302BEE01BFABB01006EFCA7 /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C302BEDF1BFABB01006EFCA7 /* gtest.framework */; };
 		C3F285511C16BB1E00B2F4D2 /* libCodec.OSX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F285501C16BB1E00B2F4D2 /* libCodec.OSX.a */; };
+		C3F285E51C18229400B2F4D2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F285E41C18229400B2F4D2 /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,7 +50,6 @@
 
 /* Begin PBXFileReference section */
 		C302BED51BFABACF006EFCA7 /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
-		C302BED81BFABACF006EFCA7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		C302BEDF1BFABB01006EFCA7 /* gtest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = gtest.framework; path = "../../../../../../../Library/Developer/Xcode/DerivedData/Codec.Apple-gcoafgwkauwjjwdejaywpcxlsnpw/Build/Products/Debug/gtest.framework"; sourceTree = "<group>"; };
 		C302BEEC1BFAC6BA006EFCA7 /* base64_tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = base64_tests.hpp; sourceTree = "<group>"; };
 		C3F284D81C116D1500B2F4D2 /* base32_tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = base32_tests.hpp; sourceTree = "<group>"; };
@@ -59,6 +58,7 @@
 		C3F284E71C12957200B2F4D2 /* test_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = test_base.hpp; sourceTree = "<group>"; };
 		C3F285501C16BB1E00B2F4D2 /* libCodec.OSX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCodec.OSX.a; path = "../../../../../../../Library/Developer/Xcode/DerivedData/Codec.Apple-gcoafgwkauwjjwdejaywpcxlsnpw/Build/Products/Debug/libCodec.OSX.a"; sourceTree = "<group>"; };
 		C3F285971C16BDAC00B2F4D2 /* Codec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Codec.xcodeproj; path = ../Codec/Codec.xcodeproj; sourceTree = "<group>"; };
+		C3F285E41C18229400B2F4D2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../../tests/main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,7 +97,7 @@
 		C302BED71BFABACF006EFCA7 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C302BED81BFABACF006EFCA7 /* main.cpp */,
+				C3F285E41C18229400B2F4D2 /* main.cpp */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -204,7 +204,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C302BED91BFABACF006EFCA7 /* main.cpp in Sources */,
+				C3F285E51C18229400B2F4D2 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
