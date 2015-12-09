@@ -38,11 +38,11 @@ static CODECode _url_encoding(void *p, const byte *data, size_t dataLen, CDCStre
 static CODECode _url_decoding(void *p, const byte *data, size_t dataLen, CDCStream *st);
 
 void urlencoding_init(void *p, CODECWork *work) {
-    urlencoding *ue = p;
-    ue->safechr = malloc(0xff * sizeof(byte));
+	byte c = 0;
+    urlencoding *ue = (urlencoding *)p;
+    ue->safechr = (byte *)malloc(0xff * sizeof(byte));
     memset(ue->safechr, 0xff, 0xff * sizeof(byte));
     
-    byte c = 0;
     for (c = 'A'; c <= 'Z'; ++c) {
         ue->safechr[c] = c;
     }
@@ -80,9 +80,9 @@ static byte _url_digit(byte b) {
 CODECode _url_encoding(void *p, const byte *data, size_t dataLen, CDCStream *st) {
     size_t i = 0;
     byte c = 0;
+	byte *safechr = ((urlencoding *)p)->safechr;
     byte escape[3] = {0};
     escape[0] = '%';
-    byte *safechr = ((urlencoding *)p)->safechr;
     for (i = 0; i < dataLen; ++i) {
         c = data[i];
         if (c == 0xff) {
@@ -115,7 +115,6 @@ static byte _url_de_digit(byte b) {
 }
 
 static CDCBOOL _url_de_escape(byte *escape) {
-    cdcassert(escape);
     byte b0 = _url_de_digit(escape[0]);
     byte b1 = _url_de_digit(escape[1]);
     if (b0 > 0x0f || b1 > 0x0f) {

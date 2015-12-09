@@ -60,12 +60,11 @@ static CODECode _base64_setopt(void *p, CODECOption opt, va_list args);
 
 #pragma mark - init
 void base64_init(void *p, CODECWork *work) {
-    
+    base64 *ptr = (base64 *)p;
     work->setup = _base64_setopt;
     work->encoding = baseN_encoding;
     work->decoding = baseN_decoding;
     
-    base64 *ptr = p;
     baseN_init(&ptr->bn, 3, 6, (char *)_standard_table, (byte *)_decode_table, 'z', 0x3f);
 }
 

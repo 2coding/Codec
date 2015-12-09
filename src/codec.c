@@ -48,11 +48,10 @@ typedef struct _codec {
 }_codec;
 
 void codec_reset(CODEC codec) {
+	_codec *c = (_codec *)codec;
     if (!codec) {
         return;
     }
-    
-    _codec *c = codec;
     
     c->code = CODECNeedSpecailProtocol;
     stream_clear(c->result);
@@ -79,11 +78,11 @@ CODEC codec_init() {
 }
 
 void codec_cleanup(CODEC codec) {
+	_codec *c = (_codec *)codec;
     if (!codec) {
         return;
     }
     
-    _codec *c = codec;
     stream_cleanup(c->result);
     
     if (c->work.cleanup) {
@@ -95,11 +94,13 @@ void codec_cleanup(CODEC codec) {
 
 #pragma mark - setopt
 static CODECode _codec_special_protocol(_codec *c, long v) {
+	CODECProtocol protocol;
+	initfunc fn = 0;
     if (v < CODECProtocolNone || v >= CODECSupportCount) {
         return CODECInvalidInput;
     }
     
-    CODECProtocol protocol = (CODECProtocol)v;
+	protocol = (CODECProtocol)v;
     if (protocol == CODECProtocolNone) {
         return CODECNeedSpecailProtocol;
     }
@@ -112,7 +113,6 @@ static CODECode _codec_special_protocol(_codec *c, long v) {
         codec_reset(c);
     }
     
-    initfunc fn = 0;
     switch (protocol) {
         case CODECBase64:
             fn = base64_init;
@@ -158,12 +158,12 @@ static CODECode _codec_setopt(_codec *c, CODECOption opt, va_list args) {
 }
 
 CODECode codec_setup(CODEC codec, CODECOption opt, ...) {
+	_codec *c = (_codec *)codec;
+	va_list args;
     if (!codec) {
         return CODECNullPtr;
     }
     
-    _codec *c = codec;
-    va_list args;
     va_start(args, opt);
     c->code = _codec_setopt(c, opt, args);
     va_end(args);
@@ -172,6 +172,7 @@ CODECode codec_setup(CODEC codec, CODECOption opt, ...) {
 }
 
 static const CDCStream * _codec_work(_codec *c, CDCBOOL encoding, const byte *data, size_t datalen) {
+	workfunc fn = 0;
     if (!c) {
         return 0;
     }
@@ -186,7 +187,7 @@ static const CDCStream * _codec_work(_codec *c, CDCBOOL encoding, const byte *da
             return 0;
         }
         
-        workfunc fn = encoding ? c->work.encoding : c->work.decoding;
+        fn = encoding ? c->work.encoding : c->work.decoding;
         cdcassert(fn);
         if (fn) {
             stream_clear(c->result);

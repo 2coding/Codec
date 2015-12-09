@@ -94,15 +94,17 @@ CDCBOOL stream_empty(const CDCStream *st) {
 
 #pragma mark - write
 static CDCBOOL _check_stream(CDCStream *st, size_t len) {
+	size_t newLen = 0;
+	byte *data = 0;
     cdcassert(len);
     if (!st || !st->data || !len) {
         return CDCFALSE;
     }
     
-    size_t newLen = st->size + len;
+    newLen = st->size + len;
     if (newLen > st->length) {
         newLen = _max(newLen, st->length * 2);
-        byte *data = malloc(newLen * sizeof(byte));
+        data = (byte *)malloc(newLen * sizeof(byte));
         if (!data) {
             return CDCFALSE;
         }
@@ -142,12 +144,14 @@ size_t stream_write_bytes(CDCStream *st, const byte *data, size_t dataLen) {
 
 #pragma mark - read
 static void _resize_stream(CDCStream *st) {
+	size_t len = 0;
+	byte *data = 0;
     if (st->size > st->length / 4 || st->length <= 0x0f) {
         return;
     }
     
-    size_t len = _max(st->length / 2, 0x0f);
-    byte *data = malloc(len * sizeof(byte));
+    len = _max(st->length / 2, 0x0f);
+    data = (byte *)malloc(len * sizeof(byte));
     if (!data) {
         return;
     }
@@ -161,6 +165,8 @@ static void _resize_stream(CDCStream *st) {
 }
 
 size_t stream_read(CDCStream *st, byte *buf, size_t *readLen) {
+	size_t len = 0;
+
     cdcassert(st);
     if (!st) {
         return 0;
@@ -170,7 +176,7 @@ size_t stream_read(CDCStream *st, byte *buf, size_t *readLen) {
         return 0;
     }
     
-    size_t len = _min(st->size, *readLen);
+    len = _min(st->size, *readLen);
     memcpy(buf, st->data, len * sizeof(byte));
     st->size -= len;
     

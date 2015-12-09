@@ -83,11 +83,7 @@ CODECode _base16_encoding(void *p, const byte *data, size_t datalen, CDCStream *
     return CODECOk;
 }
 
-CODECode _base16_decoding(void *p, const byte *data, size_t datalen, CDCStream *buf) {
-    if (datalen % 2 != 0) {
-        return CODECInvalidInput;
-    }
-    
+CODECode _base16_decoding(void *p, const byte *data, size_t datalen, CDCStream *buf) { 
     const static byte table[] = {
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // 00-0f
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // 10-1f
@@ -96,9 +92,14 @@ CODECode _base16_decoding(void *p, const byte *data, size_t datalen, CDCStream *
         0xff, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,                                                       // 40-46 A-F
         
     };
-    base16 *b16 = p;
+    base16 *b16 = (base16 *)p;
     size_t i = 0, k = 0;
     byte c = 0, t = 0;
+
+	if (datalen % 2 != 0) {
+		return CODECInvalidInput;
+	}
+
     for (i = 0; i < datalen; ++i) {
         c = data[i];
         if (c == '\r' || c == '\n') {
