@@ -71,6 +71,7 @@ CODECode _base16_encoding(void *p, const byte *data, size_t datalen, CDCStream *
     base16 *b16 = p;
     for (i = 0; i < datalen; ++i) {
         if (b16->chunkled
+			&& idx > b16->chunkledsize
             && (newsize = idx - b16->chunkledsize) > 0
             && newsize % chunklen == 0) {
             idx = stream_write_bytes(buf, (const byte *)"\r\n", 2);
