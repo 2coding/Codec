@@ -47,6 +47,7 @@ void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable
     p->detable = detable;
     p->maxchr = maxchr;
     p->mask = mask;
+	p->chunkledsize = 0;
 }
 
 CODECode baseN_setup(baseN *bn, CODECOption opt, va_list args) {
@@ -69,16 +70,18 @@ CODECode baseN_setup(baseN *bn, CODECOption opt, va_list args) {
 }
 
 #pragma mark - encoding
-static void _chunk(const baseN *p, CDCStream *buf) {
-    size_t size = stream_size(buf);
+static void _chunk(baseN *p, CDCStream *buf) {
+	size_t newsize = 0;
+	size_t size = stream_size(buf);
     if (p->chunkled
-        && size > 0
-        && size % _chunklen == 0) {
-        stream_write_bytes(buf, (const byte *)"\r\n", 2);
+        && size > p->chunkledsize
+		&& (newsize = size - p->chunkledsize) > 0
+        && newsize % _chunklen == 0) {
+        p->chunkledsize = stream_write_bytes(buf, (const byte *)"\r\n", 2);
     }
 }
 
-static void _encoding_group(const baseN *p, const byte *data, CDCStream *buf, byte group) {
+static void _encoding_group(baseN *p, const byte *data, CDCStream *buf, byte group) {
     size_t i = 0;
     uint64_t t = 0, mask = 0;
     byte *tmp = (byte *)&t;
@@ -99,7 +102,7 @@ static void _encoding_group(const baseN *p, const byte *data, CDCStream *buf, by
     }
 }
 
-static void _encoding_left(const baseN *p, const byte *data, size_t datalen, CDCStream *buf) {
+static void _encoding_left(baseN *p, const byte *data, size_t datalen, CDCStream *buf) {
     size_t left = datalen % p->group;
 	float t = .0f;
 	int padding = 0;

@@ -33,6 +33,7 @@
 typedef struct base16 {
     CDCBOOL chunkled;
     CDCBOOL ignorecase;
+	size_t chunkledsize;
 }base16;
 
 void base16_init(void *p, CODECWork *work);

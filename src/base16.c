@@ -64,15 +64,17 @@ CODECode _base16_setopt(void *p, CODECOption opt, va_list args) {
 CODECode _base16_encoding(void *p, const byte *data, size_t datalen, CDCStream *buf) {
     static const byte table[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     static const int chunklen = 76;
+	size_t newsize = 0;
     
     size_t i = 0, idx = 0;
     byte arr[2] = {0};
     base16 *b16 = p;
     for (i = 0; i < datalen; ++i) {
         if (b16->chunkled
-            && idx > 0
-            && idx % chunklen == 0) {
+            && (newsize = idx - b16->chunkledsize) > 0
+            && newsize % chunklen == 0) {
             idx = stream_write_bytes(buf, (const byte *)"\r\n", 2);
+			b16->chunkledsize = idx;
         }
         
         arr[0] = table[(data[i] >> 4) & 0x0f];

@@ -43,6 +43,7 @@ typedef struct baseN{
     byte *detable;
     byte maxchr;
     size_t mask;
+	size_t chunkledsize;
 }baseN;
 
 void baseN_init(baseN *p, byte group, byte bitslen, char *entable, byte *detable, byte maxchr, size_t mask);
